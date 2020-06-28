@@ -1,0 +1,31 @@
+{
+  "name": "npm-package-deployer",
+  "version": "0.0.1",
+  "description": "A useful tool to deploy an NPM version via CLI",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "pre-deploy": "npm run build && npm run clean",
+    "clean": "rmdir lib /s/q"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danitseitlin/npm-package-deployer.git"
+  },
+  "author": "Dani Tseitlin",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/danitseitlin/npm-package-deployer/issues"
+  },
+  "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
+  "dependencies": {},
+  "bin": {
+    "deploy": "node lib\\index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.14",
+    "node": "^14.4.0",
+    "ts-node": "^8.10.2"
+  }
+}
