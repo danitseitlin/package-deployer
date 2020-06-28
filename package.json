@@ -19,14 +19,22 @@
     "url": "https://github.com/danitseitlin/npm-package-deployer/issues"
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
+<<<<<<< HEAD
   "dependencies": {
     "node": "^14.4.0"
   },
+=======
+  "dependencies": {},
+>>>>>>> 1cfcad89e8ab19ed6f370f1a60181568cb073cc0
   "bin": {
     "deploy": "node lib\\index.js"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
+<<<<<<< HEAD
+=======
+    "node": "^14.4.0",
+>>>>>>> 1cfcad89e8ab19ed6f370f1a60181568cb073cc0
     "ts-node": "^8.10.2"
   }
 }
