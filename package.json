@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
-    "await-exec": "^0.1.2"
+    "await-exec": "^0.1.2",
+    "node": "^14.4.0"
   },
   "bin": {
     "deploy": "./index.js"
