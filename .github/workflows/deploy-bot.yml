@@ -22,6 +22,6 @@ jobs:
     - name: Creating .npmrc file
       run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_AUTH_TOKEN}}" >> ~/.npmrc
     - name: Setting up the environment
-      run: npm run build
+      run: npm install && npm run build
     - name: Deploying version
       run: sudo npm link && deploy
