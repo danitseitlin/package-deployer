@@ -28,4 +28,4 @@ jobs:
     - name: Setting up the environment
       run: npm install
     - name: Deploying version
-      run: git checkout . && npm link && deploy
+      run: git checkout . && sudo npm link && deploy
