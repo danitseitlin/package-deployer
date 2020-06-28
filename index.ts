@@ -1,4 +1,4 @@
-const packageJSON = require('./package.json');
+const packageJSON = require('../package.json');
 import * as child_process  from 'child_process';
 (async () => {
     try {
@@ -6,7 +6,7 @@ import * as child_process  from 'child_process';
         const version = await getVersion(packageJSON.name)
         console.log(`Upgrading to version: ${version}`)
         await execute(`npm version ${version} --allow-same-version`);
-        await execute(`npm publish --dry-run`);
+        await execute(`npm publish`);
     } catch (e) {
         console.log(e)
     }
