@@ -24,4 +24,4 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run build
     - name: Deploying version
-      run: ls && sudo npm link && deploy
+      run: cd lib && ls && sudo npm link && deploy
