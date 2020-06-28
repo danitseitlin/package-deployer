@@ -27,7 +27,5 @@ jobs:
       run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_AUTH_TOKEN}}" >> ~/.npmrc
     - name: Setting up the environment
       run: npm install
-    - name: Running verifications
-      run: npm run pre-deploy
     - name: Deploying version
       run: git checkout . && npm link && deploy
