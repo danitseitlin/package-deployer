@@ -34,8 +34,6 @@ async function doesPackageExist(packageName: string): Promise<boolean> {
     return response.stdout.indexOf(`No matches found for "${packageName}"\n`) === -1;
 }
 
-
-
 function execute(command: string): Promise<{ stdout: string, stderr: string }> {
     return new Promise((done, failed) => {
         child_process.exec(command, (error, stdout, stderr) => {
