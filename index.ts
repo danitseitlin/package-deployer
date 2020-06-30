@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-
-const packageJSON = require('./package.json');
+import { filterArguments } from 'cli-argument-parser'
 import * as child_process  from 'child_process';
 (async () => {
     try {
-        // console.log(process.argv)
-        // if(process.argv.indexOf('deploy') !== -1) {
-        //     console.log('deploying...')
-            console.log(`Starting deployment for ${packageJSON.name}`)
-            const version = await getVersion(packageJSON.name)
+        const argumentsList = filterArguments('--deploy-package','=')
+        if(argumentsList['deploy-package'] !== undefined) {
+            console.log('deploying...')
+            console.log(`Starting deployment for ${argumentsList['deploy-package']}`)
+            const version = await getVersion(argumentsList['deploy-package'])
             console.log(`Upgrading to version: ${version}`)
             await execute(`npm version ${version} --allow-same-version`);
             await execute(`npm publish`);
-        // }
+        }
+        else console.log('example: deploy --deploy-package=my-package')
     } catch (e) {
         console.log(e)
     }
