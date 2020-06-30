@@ -3,7 +3,7 @@ import { filterArguments } from 'cli-argument-parser'
 import * as child_process  from 'child_process';
 (async () => {
     try {
-        const argumentsList = filterArguments('--deploy-package','=')
+        const argumentsList = filterArguments('--','=')
         if(argumentsList['deploy-package'] !== undefined) {
             console.log('deploying...')
             console.log(`Starting deployment for ${argumentsList['deploy-package']}`)
