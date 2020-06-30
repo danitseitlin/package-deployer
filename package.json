@@ -1,11 +1,12 @@
 {
   "name": "npm-package-deployer",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A useful tool to deploy an NPM version via CLI",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "deploy": "node lib\\index.js",
     "pre-deploy": "npm run build && npm run clean",
     "clean": "rmdir lib /s/q"
   },
@@ -20,14 +21,14 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
+    "cli-argument-parser": "0.0.8",
     "node": "^14.4.0"
   },
   "bin": {
-    "deploy": "node lib\\index.js"
+    "deploy": "./bin/node ../../../lib/index.js"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   }
 }

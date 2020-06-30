@@ -19,9 +19,13 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    - name: Configuration GIT name
+      run: git config --global user.name ${{secrets.BOT_NAME}}
+    - name: Configuration GIT email
+      run: git config --global user.email ${{secrets.BOT_EMAIL}}
     - name: Creating .npmrc file
-      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_AUTH_TOKEN}}" >> ~/.npmrc
+      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_AUTO_TOKEN}}" >> ~/.npmrc
     - name: Setting up the environment
       run: npm install && npm run build
     - name: Deploying version
-      run: cd lib && ls && sudo npm link && deploy
+      run: sudo npm link && sudo deploy
