@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "deploy": "ts-node index.ts",
+    "deploy": "node lib\\index.js",
     "pre-deploy": "npm run build && npm run clean",
     "clean": "rmdir lib /s/q"
   },
