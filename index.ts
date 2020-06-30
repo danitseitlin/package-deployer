@@ -4,7 +4,7 @@ import * as child_process  from 'child_process';
 (async () => {
     try {
         console.log(process.argv)
-        if(process.argv[0].includes('node.exe') && process.argv[1].includes('index.js')) {
+        if(process.argv[0].includes('node') && process.argv[1].includes('npm-deploy')) {
             const packageName = process.argv[2];
             console.log('deploying...')
             console.log(`Starting deployment for ${packageName}`)
