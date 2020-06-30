@@ -1,6 +1,6 @@
 {
   "name": "npm-package-deployer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A useful tool to deploy an NPM version via CLI",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
