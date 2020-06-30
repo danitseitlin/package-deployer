@@ -1,12 +1,9 @@
 #!/usr/bin/env node
-import { filterArguments } from 'cli-argument-parser'
 import * as child_process  from 'child_process';
 (async () => {
     try {
-        console.log(process.argv)
         if(process.argv[0].includes('node') && process.argv[1].includes('npm-deploy')) {
             const packageName = process.argv[2];
-            console.log('deploying...')
             console.log(`Starting deployment for ${packageName}`)
             const version = await getVersion(packageName)
             console.log(`Upgrading to version: ${version}`)

@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
-    "cli-argument-parser": "0.0.8",
     "node": "^14.4.0"
   },
   "bin": {
