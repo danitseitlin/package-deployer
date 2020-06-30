@@ -2,11 +2,15 @@ const packageJSON = require('../package.json');
 import * as child_process  from 'child_process';
 (async () => {
     try {
-        console.log(`Starting deployment for ${packageJSON.name}`)
-        const version = await getVersion(packageJSON.name)
-        console.log(`Upgrading to version: ${version}`)
-        await execute(`npm version ${version} --allow-same-version`);
-        await execute(`npm publish`);
+        // console.log(process.argv)
+        // if(process.argv.indexOf('deploy') !== -1) {
+        //     console.log('deploying...')
+            console.log(`Starting deployment for ${packageJSON.name}`)
+            const version = await getVersion(packageJSON.name)
+            console.log(`Upgrading to version: ${version}`)
+            await execute(`npm version ${version} --allow-same-version`);
+            await execute(`npm publish`);
+        // }
     } catch (e) {
         console.log(e)
     }

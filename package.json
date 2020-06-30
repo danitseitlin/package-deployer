@@ -6,6 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "deploy": "ts-node index.ts",
     "pre-deploy": "npm run build && npm run clean",
     "clean": "rmdir lib /s/q"
   },
@@ -20,14 +21,15 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
-    "node": "^14.4.0"
+    "node": "^14.4.0",
+    "npx": "^10.2.2",
+    "ts-node": "^8.10.2"
   },
   "bin": {
-    "deploy": "node lib\\index.js"
+    "deploy": "node ./lib/index.js deploy"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
-    "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   }
 }
