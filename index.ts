@@ -10,7 +10,7 @@ import * as child_process  from 'child_process';
             const version = await getVersion(argumentsList['deploy-package'])
             console.log(`Upgrading to version: ${version}`)
             await execute(`npm version ${version} --allow-same-version`);
-            await execute(`npm publish`);
+            console.log(await execute(`npm publish`));
         }
         else console.log('example: deploy --deploy-package=my-package')
     } catch (e) {
