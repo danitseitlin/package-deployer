@@ -25,7 +25,7 @@
     "node": "^14.4.0"
   },
   "bin": {
-    "deploy": "./bin/node ../../../lib/index.js"
+    "npm-deploy": "./bin/node ../../../lib/index.js"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",

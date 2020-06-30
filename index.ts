@@ -3,16 +3,16 @@ import { filterArguments } from 'cli-argument-parser'
 import * as child_process  from 'child_process';
 (async () => {
     try {
-        const argumentsList = filterArguments('--','=')
-        if(argumentsList['deploy-package'] !== undefined) {
+        if(process.argv[0].includes('node.exe') && process.argv[1].includes('index.js')) {
+            const packageName = process.argv[2];
             console.log('deploying...')
-            console.log(`Starting deployment for ${argumentsList['deploy-package']}`)
-            const version = await getVersion(argumentsList['deploy-package'])
+            console.log(`Starting deployment for ${packageName}`)
+            const version = await getVersion(packageName)
             console.log(`Upgrading to version: ${version}`)
             await execute(`npm version ${version} --allow-same-version`);
             console.log(await execute(`npm publish`));
         }
-        else console.log('example: deploy --deploy-package=my-package')
+        else console.log('example: npm-deploy <package name>')
     } catch (e) {
         console.log(e)
     }

@@ -28,4 +28,4 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run build
     - name: Deploying version
-      run: sudo npm link && sudo deploy --deploy-package=npm-package-deployer
+      run: sudo npm link && sudo npm-deploy npm-package-deployer
