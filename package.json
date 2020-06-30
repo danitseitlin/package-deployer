@@ -6,8 +6,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "deploy": "node lib\\index.js",
     "pre-deploy": "npm run build && npm run clean",
+    "deploy": "npm-deploy npm-package-deployer",
     "clean": "rmdir lib /s/q"
   },
   "repository": {
@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
-    "cli-argument-parser": "0.0.8",
     "node": "^14.4.0"
   },
   "bin": {
