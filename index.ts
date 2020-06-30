@@ -3,6 +3,7 @@ import { filterArguments } from 'cli-argument-parser'
 import * as child_process  from 'child_process';
 (async () => {
     try {
+        console.log(process.argv)
         if(process.argv[0].includes('node.exe') && process.argv[1].includes('index.js')) {
             const packageName = process.argv[2];
             console.log('deploying...')
