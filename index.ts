@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const packageJSON = require('../package.json');
+const packageJSON = require('./package.json');
 import * as child_process  from 'child_process';
 (async () => {
     try {
