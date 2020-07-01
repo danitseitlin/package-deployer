@@ -24,9 +24,9 @@ jobs:
     - name: Configuration GIT email
       run: git config --global user.email ${{secrets.BOT_EMAIL}}
     - name: Creating .npmrc file
-      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=$NPM_AUTO_TOKEN" >> ~/.npmrc
+      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
       env:
-        NPM_AUTO_TOKEN: ${{secrets.NPM_AUTO_TOKEN}}
+        NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
     - name: Setting up the environment
       run: npm install && npm run build
     - name: Deploying version
