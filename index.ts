@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import * as child_process  from 'child_process';
-import { filterArguments } from 'cli-argument-parser';
 (async () => {
     try {
         const cliArguments = process.argv.slice(3).join(' ')
@@ -13,7 +12,7 @@ import { filterArguments } from 'cli-argument-parser';
             await execute(`npm version ${version} --allow-same-version ${cliArguments}`);
             console.log(await execute(`npm publish ${cliArguments}`));
         }
-        else console.log('example: npm-deploy <package name>')
+        else console.log('Example: npm-deploy <package name>\nIt is also possible to pass on additional NPM parameters')
     } catch (e) {
         console.log(e)
     }
