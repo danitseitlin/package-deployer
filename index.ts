@@ -46,8 +46,17 @@ async function getVersion(packageName: string, cliArguments: string): Promise<st
  * @param cliArguments The additional CLI arguments
  */
 async function doesPackageExist(packageName: string, cliArguments: string): Promise<boolean> {
-    const response = await execute(`npm search ${packageName} ${cliArguments}`);
-    return response.stdout.indexOf(`No matches found for "${packageName}"\n`) === -1;
+    const arrayArguments = cliArguments.split(' ')
+    const isScopedRegistry = arrayArguments.findIndex((item: string) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
+    const isScope = arrayArguments.findIndex((item: string) => item.includes('--scope')) !== -1;
+    if(!isScopedRegistry && !isScope) {
+        const response = await execute(`npm search ${packageName} ${cliArguments}`);
+        return response.stdout.indexOf(`No matches found for "${packageName}"\n`) === -1;
+    }
+    else {
+        console.log('Because of known NPM issues, we do not search for the package before deployment.')
+        return true;
+    }
 }
 
 /**
