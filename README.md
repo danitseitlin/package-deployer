@@ -8,6 +8,9 @@
     <img src="http://img.shields.io/npm/v/npm-package-deployer.svg?style=flat" />
   </a>
   <a href="https://dev.to/danitseitlin/simple-deploybot-npm-package-494f" style="width:25px;height:20px;">
+    <img src="https://img.shields.io/npm/danitseitlin/npm-package-deployer.svg?color=blue" style="width:25px;height:20px;" />
+  </a>
+  <a href="https://dev.to/danitseitlin/simple-deploybot-npm-package-494f" style="width:25px;height:20px;">
     <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands-1/512/84_Dev_logo_logos-512.png" style="width:25px;height:20px;" />
   </a>
 </p>
