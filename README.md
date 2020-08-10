@@ -1,3 +1,4 @@
+![NPM Deploy Bot](.github/cover-photo-big-3.png)
 # NPM Package Deployer &middot; [![GitHub license](https://img.shields.io/badge/license-BSD%203%20Clause-blue.svg)](https://github.com/danitseitlin/npm-package-deployer/blob/master/LICENSE) [![npm version](http://img.shields.io/npm/v/npm-package-deployer.svg?style=flat)](https://npmjs.org/package/npm-package-deployer "View this project on npm") 
 ## About
 A useful Node JS tool for deploying NPM Version automatically
