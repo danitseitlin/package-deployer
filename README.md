@@ -7,6 +7,9 @@
   <a href="https://npmjs.org/package/npm-package-deployer">
     <img src="http://img.shields.io/npm/v/npm-package-deployer.svg?style=flat" />
   </a>
+  <a href="https://dev.to/danitseitlin/simple-deploybot-npm-package-494f">
+    <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands-1/512/84_Dev_logo_logos-512.png" />
+  </a>
 </p>
 
 ## :zap: Quick Start
@@ -18,6 +21,6 @@ Run `npm-deploy <package name>` to deploy an automatic version locally
 You can integrate this package with a GitHub action workflow:
 1. Setup your git configuration
 2. Create an .npmrc file with the NPM auth token
-3. Add deploy script in your package.json for CLI npm-deploy <package name>
+3. Add deploy script in your package.json for `npm-deploy <package name>`
 4. Run deploy script
 A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)
