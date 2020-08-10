@@ -13,11 +13,11 @@
 Run `npm install npm-package-deployer`
 ## :clap: Basic usage
 Run `npm-deploy <package name>` to deploy an automatic version locally
-## :fire: Setup in GitHub Actions
-In order to use the `npm-deploy` command in GitHub Actions we will need to add the following to the `package.json`:
-```
-"scripts": {
-  "deploy": "npm-deploy <package name>"
-}
-```
-Then, run `npm run deploy`
+
+## :fire: Integrate with GitHub actions
+You can integrate this package with a GitHub action workflow:
+1. Setup your git configuration
+2. Create an .npmrc file with the NPM auth token
+3. Add deploy script in your package.json for CLI npm-deploy <package name>
+4. Run deploy script
+A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)
