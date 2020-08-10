@@ -1,5 +1,5 @@
 <p align="center"><a href="https://github.com/danitseitlin/npm-package-deployer"><img src=".github/cover-photo.png" /></a></p>
-<h1 align="center">NPM Deploy bot :point_right: Automate your deployment process!</h1>
+<h1 align="center">NPM Deploy bot <g-emoji class="g-emoji" alias="point_right" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f449.png">👉</g-emoji> Automate your deployment process!</h1>
 <p align="center">
   <a href="https://github.com/danitseitlin/npm-package-deployer/blob/master/LICENSE">
     <img src="https://img.shields.io/badge/license-BSD%203%20Clause-blue.svg" target="_blank" />
