@@ -15,6 +15,8 @@
   </a>
 </p>
 
+<p align="center"><img src='.github/cli-arg-gif-1.gif'/></p>
+
 ## :zap: Quick Start
 Run `npm install npm-package-deployer`
 ## :clap: Basic usage
