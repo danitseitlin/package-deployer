@@ -28,6 +28,7 @@ You can integrate this package with a GitHub action workflow:
 2. Create an .npmrc file with the NPM auth token
 3. Add deploy script in your package.json for `npm-deploy <package name>`
 4. Run deploy script
-<br>A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)
+<br>
+A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)
 
 <p align="center"><img src='.github/deploybot.gif'/></p>
