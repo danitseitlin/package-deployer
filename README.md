@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/danitseitlin/npm-package-deployer"><img src=".github/cover-photo.png" /></a></p>
+<p align="center"><a href="https://github.com/danitseitlin/npm-package-deployer"><img src=".github/resources/cover-photo.png" /></a></p>
 <h1 align="center">NPM Deploy bot <g-emoji class="g-emoji" alias="point_right" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f449.png">👉</g-emoji> Automate your deployment process!</h1>
 <p align="center">
   <a href="https://github.com/danitseitlin/npm-package-deployer/blob/master/LICENSE">
@@ -15,7 +15,7 @@
   </a>
 </p>
 
-<p align="center"><img src='.github/cli.gif'/></p>
+<p align="center"><img src='.github/resources/cli.gif'/></p>
 
 ## :zap: Quick Start
 Run `npm install npm-package-deployer`
@@ -31,4 +31,4 @@ You can integrate this package with a GitHub action workflow:
 <br>
 A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)
 
-<p align="center"><img src='.github/deploybot.gif'/></p>
+<p align="center"><img src='.github/resources/deploybot.gif'/></p>
