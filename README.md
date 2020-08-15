@@ -14,7 +14,7 @@
     <img src='https://img.shields.io/bitbucket/issues/danitseitlin/npm-package-deployer' target='_blank' />
   </a>
   <a href='https://dev.to/danitseitlin/simple-deploybot-npm-package-494f'>
-    <img src='https://cdn4.iconfinder.com/data/icons/logos-and-brands-1/512/84_Dev_logo_logos-512.png' width='25' height='20' target='_blank' />
+    <img src='.github/resources/dev-logo.png' target='_blank' />
   </a>
 </p>
 
