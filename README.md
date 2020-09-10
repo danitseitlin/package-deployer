@@ -1,4 +1,4 @@
-<p align='center'><a href='https://github.com/danitseitlin/npm-package-deployer'><img src='.github/resources/cover-photo.png' /></a></p>
+<p style='width:100%'><p align='center'><a href='https://github.com/danitseitlin/npm-package-deployer'><img src='.github/resources/cover-photo.png' /></a></p>
 <h1 align='center'>NPM Deploy bot <g-emoji class='g-emoji' alias='point_right' fallback-src='https://github.githubassets.com/images/icons/emoji/unicode/1f449.png'>👉</g-emoji> Automate your deployment process!</h1>
 <p align='center'>
   <a href='https://github.com/danitseitlin/npm-package-deployer/blob/master/LICENSE'>
@@ -16,7 +16,7 @@
   <a href='https://dev.to/danitseitlin/simple-deploybot-npm-package-494f'>
     <img src='.github/resources/dev-logo.png' target='_blank' />
   </a>
-</p>
+</p></p>
 
 <p align='center'><img src='.github/resources/cli.gif'/></p>
 
