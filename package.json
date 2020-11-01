@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
-    "node": "^14.13.0"
+    "node": "^15.0.1"
   },
   "bin": {
     "npm-deploy": "./bin/node ../../../lib/index.js"
