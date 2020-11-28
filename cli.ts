@@ -1,8 +1,14 @@
 import * as child_process  from 'child_process';
 
 export async function isAuthenticated(): Promise<boolean> {
-    const stdout = (await execute('npm whoami')).stdout.replace('\n', '');
-    return !stdout.includes('npm ERR! 401 Unauthorized - GET https://registry.npmjs.org/-/whoami')
+    try {
+        await execute('npm whoami')
+        return true
+        //return !stdout.includes('npm ERR! 401 Unauthorized - GET https://registry.npmjs.org/-/whoami')
+    } catch(e) {
+        //return !e.includes('npm ERR! 401 Unauthorized - GET https://registry.npmjs.org/-/whoami')
+        return false;
+    }
 }
 
 /**
