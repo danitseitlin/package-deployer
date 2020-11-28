@@ -1,42 +1,35 @@
-#!/usr/bin/env node
 import * as child_process  from 'child_process';
-import * as chalk from 'chalk'
-import { isAuthenticated } from './cli';
 
-(async () => {
-    try {
-        const cliArguments = process.argv.slice(3).join(' ');
-        const isNPMDeploy = (process.argv[1].includes('npm-deploy') || process.argv[1].includes('\\npm-package-deployer\\lib\\index.js'));
-        //Verifying the deploy CLI command was executed
-        if(process.argv[0].includes('node') && isNPMDeploy === true && process.argv.length >= 3) {
-            const packageName = process.argv[2];
-            if(!await isAuthenticated())
-                throw 'Auth is required!'
-            const version = await getVersion(packageName, cliArguments)
-            console.log(`Upgrading ${packageName} to version ${version}`)
-            await execute(`npm version ${version} --allow-same-version ${cliArguments}`);
-            console.log(await execute(`npm publish ${cliArguments}`));
-        }
-        else console.log(chalk.yellow('Example: npm-deploy <package name>'))
-    } catch (e) {
-        console.log(e)
-    }
-})();
+export async function isAuthenticated(): Promise<boolean> {
+    const stdout = (await execute('npm whoami')).stdout.replace('\n', '');
+    return !stdout.includes('npm ERR! code ENEEDAUTH')
+}
+
+/**
+ * 
+ * @param packageName 
+ * @param cliArguments 
+ */
+async function getCurrentVersion(packageName: string, cliArguments: string) {
+    const stdout = (await execute(`npm info ${packageName} version ${cliArguments}`)).stdout.replace('\n', '');
+    const split = stdout.split('.');
+	return {
+		major: parseInt(split[0]),
+		minor: parseInt(split[split.length-2]),
+		patch: parseInt(split[split.length-1])
+	}
+}
 
 /**
  * Retrieving the version of the current package
  * @param packageName The name of the package
  * @param cliArguments The additional CLI arguments
  */
-async function getVersion(packageName: string, cliArguments: string): Promise<string> {
+async function getUpgradeVersion(packageName: string, cliArguments: string): Promise<string> {
     if(await doesPackageExist(packageName, cliArguments)) {
-        const stdout = (await execute(`npm info ${packageName} version ${cliArguments}`)).stdout.replace('\n', '');
-        const split = stdout.split('.');
-	    const version = {
-	    	major: parseInt(split[0]),
-	    	minor: parseInt(split[split.length-2]),
-	    	patch: parseInt(split[split.length-1])
-	    }
+        //const stdout = (await execute(`npm info ${packageName} version ${cliArguments}`)).stdout.replace('\n', '');
+        //const split = stdout.split('.');
+	    const version = await getCurrentVersion(packageName, cliArguments);
 	    if(version.patch < 9) version.patch++;
 	    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
 	    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
