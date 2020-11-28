@@ -31,5 +31,5 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run build && sudo npm link
     - name: Deploying version
-      run: sudo npm-deploy
-      #run: sudo npm-deploy npm-package-deployer --dry-run
+      #run: sudo npm-deploy
+      run: sudo npm-deploy npm-package-deployer --dry-run
