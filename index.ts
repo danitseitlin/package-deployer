@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import * as child_process  from 'child_process';
+import * as chalk from 'chalk'
+
 (async () => {
     try {
         const cliArguments = process.argv.slice(3).join(' ');
@@ -12,7 +14,7 @@ import * as child_process  from 'child_process';
             await execute(`npm version ${version} --allow-same-version ${cliArguments}`);
             console.log(await execute(`npm publish ${cliArguments}`));
         }
-        else console.log('Example: npm-deploy <package name>')
+        else console.log(chalk.yellow('Example: npm-deploy <package name>'))
     } catch (e) {
         console.log(e)
     }
@@ -54,7 +56,7 @@ async function doesPackageExist(packageName: string, cliArguments: string): Prom
         return response.stdout.indexOf(`No matches found for "${packageName}"\n`) === -1;
     }
     else {
-        console.log('Because of known NPM issues, we do not search for the package before deployment.')
+        console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')
         return true;
     }
 }
