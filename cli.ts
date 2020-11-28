@@ -2,7 +2,7 @@ import * as child_process  from 'child_process';
 
 export async function isAuthenticated(): Promise<boolean> {
     const stdout = (await execute('npm whoami')).stdout.replace('\n', '');
-    return !stdout.includes('npm ERR! code ENEEDAUTH')
+    return !stdout.includes('npm ERR! 401 Unauthorized - GET https://registry.npmjs.org/-/whoami')
 }
 
 /**
