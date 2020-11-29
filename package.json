@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
   "dependencies": {
+    "@types/chalk": "^2.2.0",
+    "chalk": "^4.1.0",
     "node": "^14.13.0"
   },
   "bin": {
