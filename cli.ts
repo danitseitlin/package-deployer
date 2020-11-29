@@ -72,11 +72,23 @@ export class PackageCli {
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
         const publish = await this.execute(`npm publish ${cliArguments}`);
-        if(cliArguments.includes(' --publish-output'))
+        const prettyPublish = this.parseDeployment(publish);
+        if(cliArguments.includes(' --publish-original-output'))
             console.log(publish)
-        return this.parseDeployment(publish);
+        if(cliArguments.includes(' --publish-pretty-output')) {
+            console.log('==== Publish Output ====')
+            for(const item in prettyPublish) {
+                console.log(`${item}: ${prettyPublish[item].toString()}`)
+            }
+            console.log('========================')
+        }
+        return prettyPublish;
     }
 
+    /**
+     * 
+     * @param publishOutput 
+     */
     private parseDeployment(publishOutput: {stdout: string, stderr: string}): publishResponse {
         const split = publishOutput.stderr.split('\n');
         const name = split.find(item => item.includes('name'))
@@ -126,7 +138,8 @@ export type publishResponse = {
     unpackedSize: string | null,
     shasum: string | null,
     integrity: string | null,
-    totalFiles: number | null
+    totalFiles: number | null,
+    [key: string]: any
 }
 
 /**
