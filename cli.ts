@@ -69,7 +69,7 @@ export class PackageCli {
     async upgradePackage(cliArguments: string): Promise<void> {
         const version = await this.getCurrentVersion(cliArguments);
         const updateVersion = await this.getUpgradeVersion(cliArguments);
-        console.log(`Upgrading ${this.name}@${version} to version ${this.name}@${version}`)
+        console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
         console.log(await this.execute(`npm publish ${cliArguments}`));
     }
