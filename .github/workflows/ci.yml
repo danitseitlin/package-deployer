@@ -1,7 +1,6 @@
-name: Deploy Bot
+name: CI
 on:
-  push:
-    branches: [ master ]
+  pull_request:
 jobs:
   deployment:
     runs-on: ubuntu-latest
