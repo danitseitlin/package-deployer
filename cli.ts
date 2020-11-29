@@ -77,8 +77,10 @@ export class PackageCli {
             console.log(publish)
         if(cliArguments.includes(' --publish-pretty-output')) {
             console.log('==== Publish Output ====')
-            for(const item in prettyPublish) {
-                console.log(`${item}: ${prettyPublish[item].toString()}`)
+            const {files, ...rest} = prettyPublish
+            console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+            for(const item in rest) {
+                console.log(`${item}: ${rest[item].toString()}`)
             }
             console.log('========================')
         }
