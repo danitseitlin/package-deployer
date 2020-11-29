@@ -77,21 +77,28 @@ export class PackageCli {
 
     private parseDeployment(publishOutput: {stdout: string, stderr: string}): publishResponse {
         const split = publishOutput.stderr.split('\n');
+        const name = split.find(item => item.includes('name'))
+        const version = split.find(item => item.includes('version'))
+        const size = split.find(item => item.includes('package size'))
+        const unpackedSize = split.find(item => item.includes('unpacked size'))
+        const shasum = split.find(item => item.includes('shasum'))
+        const integrity = split.find(item => item.includes('integrity'))
+        const totalFiles = split.find(item => item.includes('total files'))
         const files: string[] = []
         const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
         const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
         for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
-            files.push(split[i]);
+            files.push(split[i].replace(/  /g, '').replace('npm notice ', '').split(' ')[1]);
         }
         return {
             files: files,
-            name: split.find(item => item.includes('name')),
-            version: split.find(item => item.includes('version')),
-            size: split.find(item => item.includes('package size')),
-            unpackedSize: split.find(item => item.includes('unpacked size')),
-            shasum: split.find(item => item.includes('shasum')),
-            integrity: split.find(item => item.includes('integrity')),
-            totalFiles: split.find(item => item.includes('total files'))
+            name: (name !== undefined) ? name.replace(/  /g, ''): null,
+            version: (version !== undefined) ? version.replace(/  /g, ''): null,
+            size: (size !== undefined) ? size.replace(/  /g, ''): null,
+            unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, ''): null,
+            shasum: (shasum !== undefined) ? shasum.replace(/  /g, ''): null,
+            integrity: (integrity !== undefined) ? integrity.replace(/  /g, ''): null,
+            totalFiles: (totalFiles !== undefined) ? totalFiles.replace(/  /g, ''): null,
         }
     }
 
@@ -110,14 +117,14 @@ export class PackageCli {
 }
 
 export type publishResponse = {
-    name: string | undefined,
+    name: string | null,
     files: string[],
-    version: string | undefined,
-    size: string | undefined,
-    unpackedSize: string | undefined,
-    shasum: string | undefined,
-    integrity: string | undefined,
-    totalFiles: string | undefined
+    version: string | null,
+    size: string | null,
+    unpackedSize: string | null,
+    shasum: string | null,
+    integrity: string | null,
+    totalFiles: string | null
 }
 
 /**
