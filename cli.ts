@@ -71,14 +71,35 @@ export class PackageCli {
         const updateVersion = await this.getUpgradeVersion(cliArguments);
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
-        console.log(await this.execute(`npm publish ${cliArguments}`));
+        const publish = await this.execute(`npm publish ${cliArguments}`);
+        console.log(this.parseDeployment(publish));
+    }
+
+    private parseDeployment(publishOutput: {stdout: string, stderr: string}): publishResponse {
+        const split = publishOutput.stderr.split('\n');
+        const files: string[] = []
+        const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
+        const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
+        for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
+            files.push(split[i]);
+        }
+        return {
+            files: files,
+            name: split.find(item => item.includes('name')),
+            version: split.find(item => item.includes('version')),
+            size: split.find(item => item.includes('package size')),
+            unpackedSize: split.find(item => item.includes('unpacked size')),
+            shasum: split.find(item => item.includes('shasum')),
+            integrity: split.find(item => item.includes('integrity')),
+            totalFiles: split.find(item => item.includes('total files'))
+        }
     }
 
     /**
      * Executes a shell command
      * @param command The command
      */
-    async execute(command: string): Promise<{ stdout: string, stderr: string }> {
+    async execute(command: string): Promise<{stdout: string, stderr: string}> {
         return new Promise((done, failed) => {
             child_process.exec(command, (error, stdout, stderr) => {
               if (error !== null) failed(error)
@@ -86,6 +107,17 @@ export class PackageCli {
             })
         })
     }
+}
+
+export type publishResponse = {
+    name: string | undefined,
+    files: string[],
+    version: string | undefined,
+    size: string | undefined,
+    unpackedSize: string | undefined,
+    shasum: string | undefined,
+    integrity: string | undefined,
+    totalFiles: string | undefined
 }
 
 /**
