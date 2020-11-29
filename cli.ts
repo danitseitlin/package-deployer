@@ -17,7 +17,6 @@ export class PackageCli {
     }
     /**
      * Retrieving the current version of the package
-     * @param this.name The name of the package
      * @param cliArguments The additional cli arguments
      */
     async getCurrentVersion(cliArguments: string) {
@@ -32,7 +31,6 @@ export class PackageCli {
 
     /**
      * Retrieving the version of the current package
-     * @param this.name The name of the package
      * @param cliArguments The additional CLI arguments
      */
     async getUpgradeVersion(cliArguments: string): Promise<string> {
@@ -48,7 +46,6 @@ export class PackageCli {
 
     /**
      * Checking if the pacakge exists in the relevant NPM registry
-     * @param this.name The name of the package
      * @param cliArguments The additional CLI arguments
      */
     async doesPackageExist(cliArguments: string): Promise<boolean> {
@@ -94,7 +91,7 @@ export class PackageCli {
 /**
  * Printing the help message
  */
-export async function printHelp() {
+export async function printHelp(): Promise<void> {
     console.log(chalk.magenta('In order to deploy a version, run the following command:'))
     console.log(chalk.white('npm-deploy <packageName> <optional additional cli args>'))
     console.log(chalk.white('for help, run npm-deploy --help'))
