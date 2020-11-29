@@ -72,6 +72,7 @@ export class PackageCli {
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
         const publish = await this.execute(`npm publish ${cliArguments}`);
+        console.log(publish)
         console.log(this.parseDeployment(publish));
     }
 
