@@ -5,7 +5,6 @@ name: Deploy Bot
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  pull_request:
   push:
     branches: [ master ]
 
@@ -31,5 +30,4 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run build && sudo npm link
     - name: Deploying version
-      #run: sudo npm-deploy
-      run: sudo npm-deploy npm-package-deployer --dry-run
+      run: sudo npm-deploy npm-package-deployer
