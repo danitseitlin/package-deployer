@@ -1,7 +1,6 @@
-name: Deploy Bot
+name: CI
 on:
-  push:
-    branches: [ master ]
+  pull_request:
 jobs:
   deployment:
     runs-on: ubuntu-latest
@@ -18,4 +17,4 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run build && sudo npm link
     - name: Deploying version
-      run: sudo npm-deploy npm-package-deployer --publish-pretty-output
+      run: sudo npm-deploy npm-package-deployer --dry-run --publish-pretty-output

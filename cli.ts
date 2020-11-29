@@ -19,7 +19,7 @@ export class PackageCli {
      * Retrieving the current version of the package
      * @param cliArguments The additional cli arguments
      */
-    async getCurrentVersion(cliArguments: string) {
+    async getCurrentVersion(cliArguments: string): Promise<Version> {
         const stdout = (await this.execute(`npm info ${this.name} version ${cliArguments}`)).stdout.replace('\n', '');
         const split = stdout.split('.');
     	return {
@@ -66,19 +66,66 @@ export class PackageCli {
      * Upgrading package to next version
      * @param cliArguments The additional CLI arguments
      */
-    async upgradePackage(cliArguments: string): Promise<void> {
+    async upgradePackage(cliArguments: string): Promise<PublishResponse> {
         const version = await this.getCurrentVersion(cliArguments);
         const updateVersion = await this.getUpgradeVersion(cliArguments);
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
-        console.log(await this.execute(`npm publish ${cliArguments}`));
+        const publish = await this.execute(`npm publish ${cliArguments}`);
+        const prettyPublish = this.parseDeployment(publish);
+        if(cliArguments.includes(' --publish-original-output'))
+            console.log(publish)
+        if(cliArguments.includes(' --publish-pretty-output')) {
+            console.log('==== Publish Output ====')
+            const { files, ...rest } = prettyPublish
+            console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+            for(const item in rest) {
+                console.log(`${item}: ${rest[item].toString()}`)
+            }
+            console.log('========================')
+        }
+        return prettyPublish;
     }
 
     /**
-     * Executes a shell command
+     * Parsing the publish output to a more pretified version
+     * @param output The publish output
+     */
+    private parseDeployment(output: {stdout: string, stderr: string}): PublishResponse {
+        const split = output.stderr.split('\n');
+        const name = split.find(item => item.includes('name'))
+        const version = split.find(item => item.includes('version'))
+        const size = split.find(item => item.includes('package size'))
+        const unpackedSize = split.find(item => item.includes('unpacked size'))
+        const shasum = split.find(item => item.includes('shasum'))
+        const integrity = split.find(item => item.includes('integrity'))
+        const totalFiles = split.find(item => item.includes('total files'))
+        const files: string[] = []
+        const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
+        const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
+
+        //Parsing only the files
+        for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
+            files.push(split[i].split('B ')[1].replace(/ /g, '').replace('\n', ''));
+        }
+        //Building and returning the rest of the JS object
+        return {
+            files: files,
+            name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
+            version: (version !== undefined) ? version.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
+            size: (size !== undefined) ? size.replace(/  /g, '').split(':')[1]: null,
+            unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
+            shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
+            integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
+            totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
+        }
+    }
+
+    /**
+     * Executing a shell command
      * @param command The command
      */
-    async execute(command: string): Promise<{ stdout: string, stderr: string }> {
+    async execute(command: string): Promise<{stdout: string, stderr: string}> {
         return new Promise((done, failed) => {
             child_process.exec(command, (error, stdout, stderr) => {
               if (error !== null) failed(error)
@@ -94,6 +141,44 @@ export class PackageCli {
 export async function printHelp(): Promise<void> {
     console.log(chalk.magenta('In order to deploy a version, run the following command:'))
     console.log(chalk.white('npm-deploy <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
     console.log(chalk.white('for help, run npm-deploy --help'))
     console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+}
+
+/**
+ * The publish response object
+ * @param name The name of the package
+ * @param files A list of files that we're deployed
+ * @param version The version of the package (after the update)
+ * @param size The size of the package (after the update)
+ * @param unpackedSize The unpacked size of the package (after the update)
+ * @param shasum The shasum of the package
+ * @param integrity The integrity of the package
+ * @param totalFiles The total files deployed of the package
+ */
+export type PublishResponse = {
+    name: string | null,
+    files: string[],
+    version: string | null,
+    size: string | null,
+    unpackedSize: string | null,
+    shasum: string | null,
+    integrity: string | null,
+    totalFiles: number | null,
+    [key: string]: any
+}
+
+/**
+ * The version object
+ * @param major The major part of the version (1.x.x)
+ * @param minor The minor part of the version (x.2.x)
+ * @param patch The patch part of the version (x.x.3)
+ */
+export type Version = {
+    major: number,
+    minor: number,
+    patch: number
 }
