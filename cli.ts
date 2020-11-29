@@ -88,11 +88,11 @@ export class PackageCli {
     }
 
     /**
-     * 
-     * @param publishOutput 
+     * Parsing the publish output to a more pretified version
+     * @param output The publish output
      */
-    private parseDeployment(publishOutput: {stdout: string, stderr: string}): publishResponse {
-        const split = publishOutput.stderr.split('\n');
+    private parseDeployment(output: {stdout: string, stderr: string}): publishResponse {
+        const split = output.stderr.split('\n');
         const name = split.find(item => item.includes('name'))
         const version = split.find(item => item.includes('version'))
         const size = split.find(item => item.includes('package size'))
@@ -103,9 +103,12 @@ export class PackageCli {
         const files: string[] = []
         const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
         const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
+
+        //Parsing only the files
         for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
             files.push(split[i].split('B ')[1].replace(/ /g, '').replace('\n', ''));
         }
+        //Building and returning the rest of the JS object
         return {
             files: files,
             name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
@@ -119,7 +122,7 @@ export class PackageCli {
     }
 
     /**
-     * Executes a shell command
+     * Executing a shell command
      * @param command The command
      */
     async execute(command: string): Promise<{stdout: string, stderr: string}> {
@@ -150,6 +153,9 @@ export type publishResponse = {
 export async function printHelp(): Promise<void> {
     console.log(chalk.magenta('In order to deploy a version, run the following command:'))
     console.log(chalk.white('npm-deploy <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
     console.log(chalk.white('for help, run npm-deploy --help'))
     console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
 }
