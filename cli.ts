@@ -89,7 +89,7 @@ export class PackageCli {
         const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
         const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
         for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
-            files.push(split[i].replace(/  /g, '').replace('npm notice ', '').split(' ')[1]);
+            files.push(split[i].split('B ')[1].replace(/  /g, '').replace('\n', ''));
         }
         return {
             files: files,
