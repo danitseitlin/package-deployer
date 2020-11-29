@@ -66,14 +66,15 @@ export class PackageCli {
      * Upgrading package to next version
      * @param cliArguments The additional CLI arguments
      */
-    async upgradePackage(cliArguments: string): Promise<void> {
+    async upgradePackage(cliArguments: string): Promise<publishResponse> {
         const version = await this.getCurrentVersion(cliArguments);
         const updateVersion = await this.getUpgradeVersion(cliArguments);
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
         const publish = await this.execute(`npm publish ${cliArguments}`);
-        console.log(publish)
-        console.log(this.parseDeployment(publish));
+        if(cliArguments.includes(' --publish-output'))
+            console.log(publish)
+        return this.parseDeployment(publish);
     }
 
     private parseDeployment(publishOutput: {stdout: string, stderr: string}): publishResponse {
