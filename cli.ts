@@ -93,12 +93,12 @@ export class PackageCli {
         return {
             files: files,
             name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
-            version: (version !== undefined) ? version.replace(/  /g, '').split(':')[1]: null,
+            version: (version !== undefined) ? version.replace(/  /g, '').split(': ')[1]: null,
             size: (size !== undefined) ? size.replace(/  /g, '').split(':')[1]: null,
             unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, '').split(': ')[1]: null,
             shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
             integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
-            totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(' :')[1]): null,
+            totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
         }
     }
 
