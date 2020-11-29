@@ -73,9 +73,9 @@ export class PackageCli {
         await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
         const publish = await this.execute(`npm publish ${cliArguments}`);
         const prettyPublish = this.parseDeployment(publish);
-        if(cliArguments.includes(' --publish-original-output'))
+        if(cliArguments.includes('--publish-original-output'))
             console.log(publish)
-        if(cliArguments.includes(' --publish-pretty-output')) {
+        if(cliArguments.includes('--publish-pretty-output')) {
             console.log('==== Publish Output ====')
             const { files, ...rest } = prettyPublish
             console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
