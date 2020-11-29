@@ -92,13 +92,13 @@ export class PackageCli {
         }
         return {
             files: files,
-            name: (name !== undefined) ? name.replace(/  /g, ''): null,
-            version: (version !== undefined) ? version.replace(/  /g, ''): null,
-            size: (size !== undefined) ? size.replace(/  /g, ''): null,
-            unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, ''): null,
-            shasum: (shasum !== undefined) ? shasum.replace(/  /g, ''): null,
-            integrity: (integrity !== undefined) ? integrity.replace(/  /g, ''): null,
-            totalFiles: (totalFiles !== undefined) ? totalFiles.replace(/  /g, ''): null,
+            name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
+            version: (version !== undefined) ? version.replace(/  /g, '').split(':')[1]: null,
+            size: (size !== undefined) ? size.replace(/  /g, '').split(':')[1]: null,
+            unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, '').split(': ')[1]: null,
+            shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
+            integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
+            totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(' :')[1]): null,
         }
     }
 
@@ -124,7 +124,7 @@ export type publishResponse = {
     unpackedSize: string | null,
     shasum: string | null,
     integrity: string | null,
-    totalFiles: string | null
+    totalFiles: number | null
 }
 
 /**
