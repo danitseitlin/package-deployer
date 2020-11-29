@@ -19,7 +19,7 @@ export class PackageCli {
      * Retrieving the current version of the package
      * @param cliArguments The additional cli arguments
      */
-    async getCurrentVersion(cliArguments: string) {
+    async getCurrentVersion(cliArguments: string): Promise<Version> {
         const stdout = (await this.execute(`npm info ${this.name} version ${cliArguments}`)).stdout.replace('\n', '');
         const split = stdout.split('.');
     	return {
@@ -66,7 +66,7 @@ export class PackageCli {
      * Upgrading package to next version
      * @param cliArguments The additional CLI arguments
      */
-    async upgradePackage(cliArguments: string): Promise<publishResponse> {
+    async upgradePackage(cliArguments: string): Promise<PublishResponse> {
         const version = await this.getCurrentVersion(cliArguments);
         const updateVersion = await this.getUpgradeVersion(cliArguments);
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
@@ -77,7 +77,7 @@ export class PackageCli {
             console.log(publish)
         if(cliArguments.includes(' --publish-pretty-output')) {
             console.log('==== Publish Output ====')
-            const {files, ...rest} = prettyPublish
+            const { files, ...rest } = prettyPublish
             console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
             for(const item in rest) {
                 console.log(`${item}: ${rest[item].toString()}`)
@@ -91,7 +91,7 @@ export class PackageCli {
      * Parsing the publish output to a more pretified version
      * @param output The publish output
      */
-    private parseDeployment(output: {stdout: string, stderr: string}): publishResponse {
+    private parseDeployment(output: {stdout: string, stderr: string}): PublishResponse {
         const split = output.stderr.split('\n');
         const name = split.find(item => item.includes('name'))
         const version = split.find(item => item.includes('version'))
@@ -135,7 +135,31 @@ export class PackageCli {
     }
 }
 
-export type publishResponse = {
+/**
+ * Printing the help message
+ */
+export async function printHelp(): Promise<void> {
+    console.log(chalk.magenta('In order to deploy a version, run the following command:'))
+    console.log(chalk.white('npm-deploy <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
+    console.log(chalk.white('for help, run npm-deploy --help'))
+    console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+}
+
+/**
+ * The publish response object
+ * @param name The name of the package
+ * @param files A list of files that we're deployed
+ * @param version The version of the package (after the update)
+ * @param size The size of the package (after the update)
+ * @param unpackedSize The unpacked size of the package (after the update)
+ * @param shasum The shasum of the package
+ * @param integrity The integrity of the package
+ * @param totalFiles The total files deployed of the package
+ */
+export type PublishResponse = {
     name: string | null,
     files: string[],
     version: string | null,
@@ -148,14 +172,13 @@ export type publishResponse = {
 }
 
 /**
- * Printing the help message
+ * The version object
+ * @param major The major part of the version (1.x.x)
+ * @param minor The minor part of the version (x.2.x)
+ * @param patch The patch part of the version (x.x.3)
  */
-export async function printHelp(): Promise<void> {
-    console.log(chalk.magenta('In order to deploy a version, run the following command:'))
-    console.log(chalk.white('npm-deploy <packageName> <optional additional cli args>'))
-    console.log(chalk.white('additional parameters:'))
-    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
-    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
-    console.log(chalk.white('for help, run npm-deploy --help'))
-    console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+export type Version = {
+    major: number,
+    minor: number,
+    patch: number
 }

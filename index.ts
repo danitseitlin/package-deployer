@@ -18,7 +18,8 @@ import { PackageCli, printHelp } from './cli';
             }
         }
         else printHelp()
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        console.log(error);
+        throw Error(error);
     }
 })();
