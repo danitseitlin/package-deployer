@@ -22,7 +22,7 @@ function configureGitHub(pkgName) {
  * Executing a shell command
  * @param command The command
  */
-export async function execute(command) {
+ async function execute(command) {
     return new Promise((done, failed) => {
         child_process.exec(command, (error, stdout, stderr) => {
         	if (error !== null) failed(error)
@@ -35,7 +35,7 @@ export async function execute(command) {
  * Retrieving the current version of the package
  * @param cliArguments The additional cli arguments
  */
-export async function getCurrentVersion(pkgName) {
+ async function getCurrentVersion(pkgName) {
     const stdout = (await execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
     const split = stdout.split('.');
 	return {
@@ -49,7 +49,7 @@ export async function getCurrentVersion(pkgName) {
  * Retrieving the version of the current package
  * @param cliArguments The additional CLI arguments
  */
-export async function getUpgradeVersion(pkgName, registry) {
+ async function getUpgradeVersion(pkgName, registry) {
     if(await doesPackageExist(pkgName, registry)) {
 	    const version = await getCurrentVersion(registry);
 	    if(version.patch < 9) version.patch++;
@@ -64,7 +64,7 @@ export async function getUpgradeVersion(pkgName, registry) {
  * Checking if the pacakge exists in the relevant NPM registry
  * @param cliArguments The additional CLI arguments
  */
-export async function doesPackageExist(pkgName, cliArguments) {
+ async function doesPackageExist(pkgName, cliArguments) {
     const arrayArguments = cliArguments.split(' ')
     const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
