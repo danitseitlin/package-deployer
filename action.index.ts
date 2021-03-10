@@ -1,20 +1,21 @@
-const utils = require('./src/utils')
-const exec = require('@actions/exec');
-const core = require('@actions/core');
-
+//const utils = require('./src/utils.ts')
+//const exec = require('@actions/exec');
+//const core = require('@actions/core');
+import * as utils from './src/utils'
+import * as core from '@actions/core'
 const github_access_token = core.getInput('github_access_token');
 const npm_access_token = core.getInput('npm_access_token');
 const pkg_name = core.getInput('pkg_name');
 const pkg_registry = core.getInput('pkg_registry');
 
-function configureNPM(token, registry) {
+function configureNPM(token: string, registry: string) {
     //Creating the .npmrc file
     utils.execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
     //Renaming the .npmrc file so NPM will auto detect it
     utils.execute(`mv "~/.npmrc" .npmrc`);
 }
 
-function configureGitHub(pkgName) {
+function configureGitHub(pkgName: string) {
     utils.execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
 }
 
