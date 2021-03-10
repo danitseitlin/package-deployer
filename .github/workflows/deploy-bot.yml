@@ -2,6 +2,8 @@ name: Deploy Bot
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 jobs:
   deployment:
     runs-on: ubuntu-latest
