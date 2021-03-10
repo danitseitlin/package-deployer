@@ -1,6 +1,6 @@
-import * as child_process  from 'child_process';
+#!/usr/bin/env node
 import * as chalk from 'chalk'
-
+import { execute } from './src/utils'
 export class PackageCli {
     constructor(public name: string) {}
 
@@ -9,7 +9,7 @@ export class PackageCli {
      */
     async isAuthenticated(): Promise<boolean> {
         try {
-            await this.execute('npm whoami')
+            await execute('npm whoami')
             return true
         } catch(e) {
             return false;
@@ -20,7 +20,7 @@ export class PackageCli {
      * @param cliArguments The additional cli arguments
      */
     async getCurrentVersion(cliArguments: string): Promise<Version> {
-        const stdout = (await this.execute(`npm info ${this.name} version ${cliArguments}`)).stdout.replace('\n', '');
+        const stdout = (await execute(`npm info ${this.name} version ${cliArguments}`)).stdout.replace('\n', '');
         const split = stdout.split('.');
     	return {
     		major: parseInt(split[0]),
@@ -53,7 +53,7 @@ export class PackageCli {
         const isScopedRegistry = arrayArguments.findIndex((item: string) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
         const isScope = arrayArguments.findIndex((item: string) => item.includes('--scope')) !== -1;
         if(!isScopedRegistry && !isScope) {
-            const response = await this.execute(`npm search ${this.name} ${cliArguments}`);
+            const response = await execute(`npm search ${this.name} ${cliArguments}`);
             return response.stdout.indexOf(`No matches found for "${this.name}"\n`) === -1;
         }
         else {
@@ -70,8 +70,8 @@ export class PackageCli {
         const version = await this.getCurrentVersion(cliArguments);
         const updateVersion = await this.getUpgradeVersion(cliArguments);
         console.log(`Upgrading ${this.name}@${version.major}.${version.minor}.${version.patch} to version ${this.name}@${updateVersion}`)
-        await this.execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
-        const publish = await this.execute(`npm publish ${cliArguments}`);
+        await execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
+        const publish = await execute(`npm publish ${cliArguments}`);
         const prettyPublish = this.parseDeployment(publish);
         if(cliArguments.includes('--publish-original-output'))
             console.log(publish)
@@ -121,18 +121,7 @@ export class PackageCli {
         }
     }
 
-    /**
-     * Executing a shell command
-     * @param command The command
-     */
-    async execute(command: string): Promise<{stdout: string, stderr: string}> {
-        return new Promise((done, failed) => {
-            child_process.exec(command, (error, stdout, stderr) => {
-              if (error !== null) failed(error)
-              done({ stdout, stderr })
-            })
-        })
-    }
+    
 }
 
 /**
