@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { PackageCli, printHelp } from './cli';
 
 (async () => {
