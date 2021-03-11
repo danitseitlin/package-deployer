@@ -88,12 +88,13 @@ function getCliArguments() {
  * Checking if the pacakge exists in the relevant NPM registry
  * @param cliArguments The additional CLI arguments
  */
-async function doesPackageExist(pkgName, cliArguments) {
+async function doesPackageExist(pkgName, registry) {
     const arrayArguments = cliArguments.split(' ')
     const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
+
     if(!isScopedRegistry && !isScope) {
-        const response = await execute(`npm search ${pkgName}${cliArguments}`);
+        const response = await execute(`npm search ${pkgName} --registry=${registry}`);
         return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
     }
     else {
