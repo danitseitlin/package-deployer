@@ -126,7 +126,10 @@ function parseDeployment(output) {
     }
 }
 
-(async () => {
+/**
+ * Deploying pkg version
+ */
+async function deploy() {
     configureNPM(npm_access_token, pkg_registry);
     configureGitHub(pkg_name)
     const version = await getCurrentVersion(pkg_name)
@@ -147,4 +150,8 @@ function parseDeployment(output) {
     }
     else
         console.log(publish)
+}
+
+(async () => {
+    await deploy()
 })();

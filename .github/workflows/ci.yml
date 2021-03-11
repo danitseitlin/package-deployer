@@ -2,7 +2,7 @@ name: CI
 on:
   pull_request:
 jobs:
-  deployment:
+  pkg_deployment:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -18,3 +18,16 @@ jobs:
       run: npm install && npm run build && sudo npm link
     - name: Deploying version
       run: sudo npm-deploy npm-package-deployer --dry-run --publish-pretty-output
+  action_deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setting up the environment
+      run: npm install && npm run build && sudo npm link
+    - name: Deploying version
+      uses: danitseitlin/npm-package-deployer@master
+      with:
+        pkg_name: npm-package-deployer
+        pkg_registry: https://registry.npmjs.org/
+        npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
+        dry_run: true
