@@ -63,7 +63,7 @@ async function getUpgradeVersion(pkgName, registry) {
 }
 
 /***
- * 
+ * Retrieving the args for the CLI commands
  */
 async function getCliArguments() {
     let args = '';
@@ -71,6 +71,8 @@ async function getCliArguments() {
         args+= ` --registry=${pkg_registry}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
+    console.log(`Given args: ${args}`)
+    return args;
 }
 
 /**
