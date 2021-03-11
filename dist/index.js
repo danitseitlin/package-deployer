@@ -1054,6 +1054,8 @@ function configureNPM(token, registry) {
     //Creating the .npmrc file
     execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
     //Renaming the .npmrc file so NPM will auto detect it
+    execute('ls -a')
+    execute('cat ~/.npmrc')
     execute(`mv "~:.npmrc" .npmrc`);
     execute('cat .npmrc')
     debugLog('cat .npmrc')
