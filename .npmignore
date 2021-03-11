@@ -4,6 +4,12 @@ package-lock.json
 tests
 index.ts
 tests.ts
+action.index.js
+action.yml
+cli.ts
+dist
+dist/index.js
 **/tests/*.ts
 **/tests/*.js
 tsconfig.json
+src/utils.ts

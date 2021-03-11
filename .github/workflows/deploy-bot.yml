@@ -7,15 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Configuration GIT name
-      run: git config --global user.name ${{secrets.BOT_NAME}}
-    - name: Configuration GIT email
-      run: git config --global user.email ${{secrets.BOT_EMAIL}}
-    - name: Creating .npmrc file
-      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
-      env:
-        NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
     - name: Setting up the environment
       run: npm install && npm run build && sudo npm link
     - name: Deploying version
-      run: sudo npm-deploy npm-package-deployer --publish-pretty-output
+      uses: danitseitlin/npm-package-deployer@master
+      with:
+        pkg_name: npm-package-deployer
+        pkg_registry: https://registry.npmjs.org/
+        npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
