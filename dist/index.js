@@ -1044,25 +1044,22 @@ const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
-function debugLog(msg) {
+async function debugLog(msg) {
     if(debug === 'true' || debug === true)
         //console.log(msg)
-        execute(`echo "${msg}"`)
+        console.log(await execute(`echo "${msg}"`))
 }
 
-function configureNPM(token, registry) {
+async function configureNPM(token, registry) {
     //Creating the .npmrc file
-    execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
+    await execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
     //Renaming the .npmrc file so NPM will auto detect it
-    console.log(execute('ls -a'))
-    execute('cat ~/.npmrc')
-    execute(`mv "~/.npmrc" .npmrc`);
-    execute('cat .npmrc')
-    debugLog('cat .npmrc')
+    await execute(`ls -a || mv "~:.npmrc" .npmrc`);
+    await debugLog('cat .npmrc')
 }
 
-function configureGitHub(pkgName) {
-    execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
+async function configureGitHub(pkgName) {
+    await execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
 }
 
 /**
@@ -1174,14 +1171,14 @@ function parseDeployment(output) {
  * Deploying pkg version
  */
 async function deploy() {
-    configureNPM(npm_access_token, pkg_registry);
-    configureGitHub(pkg_name)
+    await configureNPM(npm_access_token, pkg_registry);
+    await configureGitHub(pkg_name)
     const version = await getCurrentVersion(pkg_name)
-    debugLog(`current ver: ${version}`)
+    await debugLog(`current ver: ${version}`)
     const updateVersion = await getUpgradeVersion(pkg_name, pkg_registry);
-    debugLog(`new ver: ${updateVersion}`)
+    await debugLog(`new ver: ${updateVersion}`)
     const cliArguments = getCliArguments();
-    debugLog(`args: ${cliArguments}`)
+    await debugLog(`args: ${cliArguments}`)
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
