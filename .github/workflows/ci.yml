@@ -24,14 +24,16 @@ jobs:
     - uses: actions/checkout@v2
     - name: Setting up the environment
       run: npm install && npm run build && sudo npm link
-    #- name: Extract branch name
-    #  shell: bash
-    #  run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-    #  id: extract_branch
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
     - name: Deploying version
-      uses: danitseitlin/npm-package-deployer@${{GITHUB_REF##*/}}
+      uses: danitseitlin/npm-package-deployer@$branch
       with:
         pkg_name: npm-package-deployer
         pkg_registry: https://registry.npmjs.org/
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         dry_run: true
+      env: 
+        branch: ${{ steps.extract_branch.outputs.branch }}
