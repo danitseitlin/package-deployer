@@ -30,10 +30,11 @@ jobs:
       id: extract_branch
     - name: Deploying version
       uses: danitseitlin/npm-package-deployer@${{ branch }}
+      env: 
+        branch: ${{ steps.extract_branch.outputs.branch }}
       with:
         pkg_name: npm-package-deployer
         pkg_registry: https://registry.npmjs.org/
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         dry_run: true
-      env: 
-        branch: ${{ steps.extract_branch.outputs.branch }}
+      
