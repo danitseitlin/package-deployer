@@ -2,6 +2,10 @@ name: CI
 on:
   pull_request:
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
   pkg_deployment:
     runs-on: ubuntu-latest
     steps:
@@ -19,6 +23,7 @@ jobs:
     - name: Deploying version
       run: sudo npm-deploy npm-package-deployer --dry-run --publish-pretty-output
   action_deployment:
+    needs: setup 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +34,9 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
     - name: Deploying version
-      uses: danitseitlin/npm-package-deployer@${{ branch }}
-      env: 
-        branch: ${{ steps.extract_branch.outputs.branch }}
+      uses: danitseitlin/npm-package-deployer@${{ needs.setup.outputs.branch }}
+      #env: 
+      #  branch: ${{ steps.extract_branch.outputs.branch }}
       with:
         pkg_name: npm-package-deployer
         pkg_registry: https://registry.npmjs.org/
