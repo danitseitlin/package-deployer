@@ -1047,7 +1047,7 @@ const debug = core.getInput('debug');
 async function debugLog(msg) {
     if(debug === 'true' || debug === true)
         //console.log(msg)
-        console.log(await execute(`echo "${msg}"`))
+        console.log(await execute(msg))
 }
 
 async function configureNPM(token, registry) {
