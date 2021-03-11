@@ -1101,7 +1101,7 @@ async function getUpgradeVersion(pkgName, registry) {
  */
 function getCliArguments() {
     let args = '';
-    if(pkg_registry)
+    if(pkg_registry && pkg_registry !== 'https://registry.npmjs.org/')
         args+= ` --registry=${pkg_registry}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
