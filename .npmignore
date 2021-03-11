@@ -4,6 +4,8 @@ package-lock.json
 tests
 index.ts
 tests.ts
+dist
+dist/index.js
 **/tests/*.ts
 **/tests/*.js
 tsconfig.json
