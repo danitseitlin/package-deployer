@@ -18,7 +18,7 @@ const debug = core.getInput('debug');
 
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
-    await execute(`echo "registry=${registry}" >> ".npmrc" && echo "//${registry}:_authToken=${token}" >> ".npmrc"`);
+    await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
     //Renaming the .npmrc file so NPM will auto detect it
     await execute(`ls -a`);
     await execute('cat .npmrc')
@@ -77,7 +77,7 @@ async function getUpgradeVersion(pkgName, cliArguments) {
  */
 function getCliArguments() {
     let args = '';
-    if(pkg_registry && pkg_registry !== 'https://registry.npmjs.org/')
+    if(pkg_registry && pkg_registry !== 'registry.npmjs.org')
         args+= ` --registry=${pkg_registry}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
