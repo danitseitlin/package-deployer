@@ -1,4 +1,3 @@
-const exec = require('@actions/exec');
 const core = require('@actions/core');
 const child_process = require('child_process');
 
@@ -10,18 +9,9 @@ const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
-//async function debugLog(msg) {
-//    if(debug === 'true' || debug === true)
-//        //console.log(msg)
-//        console.log(await execute(msg))
-//}
-
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
     await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
-    //Renaming the .npmrc file so NPM will auto detect it
-    await execute(`ls -a`);
-    await execute('cat .npmrc')
 }
 
 async function configureGitHub(pkgName) {
@@ -155,10 +145,10 @@ async function deploy() {
     if(pretty_print === 'true' || pretty_print === true) {
         const prettyPublish = parseDeployment(publish);
         const { files, ...rest } = prettyPublish
-        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
         for(const item in rest) {
             console.log(`${item}: ${rest[item].toString()}`)
         }
+        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
         console.log('========================')
     }
     else
