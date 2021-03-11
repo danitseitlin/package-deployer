@@ -1105,7 +1105,6 @@ function getCliArguments() {
         args+= ` --registry=${pkg_registry}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
-    console.log(`Given args: ${args}`)
     return args;
 }
 
