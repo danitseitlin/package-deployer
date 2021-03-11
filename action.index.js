@@ -137,7 +137,7 @@ async function deploy() {
     const cliArguments = getCliArguments();
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
-    const publish = await execute(`npm publish ${cliArguments} --dry-run`);
+    const publish = await execute(`npm publish ${cliArguments}`);
     console.log('==== Publish Output ====')
     if(pretty_print === 'true' || pretty_print === true) {
         const prettyPublish = parseDeployment(publish);
