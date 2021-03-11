@@ -10,18 +10,18 @@ const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
-async function debugLog(msg) {
-    if(debug === 'true' || debug === true)
-        //console.log(msg)
-        console.log(await execute(msg))
-}
+//async function debugLog(msg) {
+//    if(debug === 'true' || debug === true)
+//        //console.log(msg)
+//        console.log(await execute(msg))
+//}
 
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
     await execute(`echo "registry=${registry}" >> ".npmrc" && echo "//${registry}:_authToken=${token}" >> ".npmrc"`);
     //Renaming the .npmrc file so NPM will auto detect it
     await execute(`ls -a`);
-    await debugLog('cat .npmrc')
+    await execute('cat .npmrc')
 }
 
 async function configureGitHub(pkgName) {
@@ -35,7 +35,9 @@ async function configureGitHub(pkgName) {
  async function execute(command) {
     return new Promise((done, failed) => {
         child_process.exec(command, (error, stdout, stderr) => {
-        	if (error !== null) failed(error)
+            if (error !== null) failed(error)
+            if(debug === 'true' || debug === true)
+                console.log({ stdout, stderr })
         	done({ stdout, stderr })
         })
     })
@@ -140,11 +142,11 @@ async function deploy() {
     await configureNPM(npm_access_token, pkg_registry);
     await configureGitHub(pkg_name)
     const version = await getCurrentVersion(pkg_name)
-    await debugLog(`current ver: ${version}`)
+    await execute(`echo "current ver: ${JSON.stringify(version)}"`)
     const updateVersion = await getUpgradeVersion(pkg_name, pkg_registry);
-    await debugLog(`new ver: ${updateVersion}`)
+    await execute(`echo "new ver: ${updateVersion}"`)
     const cliArguments = getCliArguments();
-    await debugLog(`args: ${cliArguments}`)
+    await execute(`echo "args: ${cliArguments}"`)
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
