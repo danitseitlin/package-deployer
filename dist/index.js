@@ -1105,7 +1105,6 @@ function getCliArguments() {
         args+= ` --registry=${pkg_registry}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
-    console.log(`Given args: ${args}`)
     return args;
 }
 
@@ -1118,7 +1117,7 @@ async function doesPackageExist(pkgName, cliArguments) {
     const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
     if(!isScopedRegistry && !isScope) {
-        const response = await execute(`npm search ${pkgName} ${cliArguments}`);
+        const response = await execute(`npm search ${pkgName}${cliArguments}`);
         return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
     }
     else {
@@ -1170,8 +1169,8 @@ async function deploy() {
     const updateVersion = await getUpgradeVersion(pkg_name, pkg_registry);
     const cliArguments = getCliArguments();
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
-    await execute(`npm version ${updateVersion} --allow-same-version ${cliArguments}`);
-    const publish = await execute(`npm publish ${cliArguments}`);
+    await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
+    const publish = await execute(`npm publish${cliArguments}`);
     console.log('==== Publish Output ====')
     if(pretty_print === 'true' || pretty_print === true) {
         const prettyPublish = parseDeployment(publish);
