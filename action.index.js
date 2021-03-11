@@ -10,18 +10,18 @@ const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
-async function debugLog(msg) {
-    if(debug === 'true' || debug === true)
-        //console.log(msg)
-        console.log(await execute(`echo "${msg}"`))
-}
+//async function debugLog(msg) {
+//    if(debug === 'true' || debug === true)
+//        //console.log(msg)
+//        console.log(await execute(msg))
+//}
 
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
     await execute(`echo "registry=${registry}" >> ".npmrc" && echo "//${registry}:_authToken=${token}" >> ".npmrc"`);
     //Renaming the .npmrc file so NPM will auto detect it
     await execute(`ls -a`);
-    await debugLog('cat .npmrc')
+    await execute('cat .npmrc')
 }
 
 async function configureGitHub(pkgName) {
@@ -35,7 +35,9 @@ async function configureGitHub(pkgName) {
  async function execute(command) {
     return new Promise((done, failed) => {
         child_process.exec(command, (error, stdout, stderr) => {
-        	if (error !== null) failed(error)
+            if (error !== null) failed(error)
+            if(debug === 'true' || debug === true)
+                console.log({ command, stdout, stderr })
         	done({ stdout, stderr })
         })
     })
@@ -59,8 +61,8 @@ async function configureGitHub(pkgName) {
  * Retrieving the version of the current package
  * @param cliArguments The additional CLI arguments
  */
-async function getUpgradeVersion(pkgName, registry) {
-    if(await doesPackageExist(pkgName, registry)) {
+async function getUpgradeVersion(pkgName, cliArguments) {
+    if(await doesPackageExist(pkgName, cliArguments)) {
 	    const version = await getCurrentVersion(pkgName);
 	    if(version.patch < 9) version.patch++;
 	    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
@@ -90,6 +92,7 @@ async function doesPackageExist(pkgName, cliArguments) {
     const arrayArguments = cliArguments.split(' ')
     const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
+
     if(!isScopedRegistry && !isScope) {
         const response = await execute(`npm search ${pkgName}${cliArguments}`);
         return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
@@ -139,12 +142,12 @@ function parseDeployment(output) {
 async function deploy() {
     await configureNPM(npm_access_token, pkg_registry);
     await configureGitHub(pkg_name)
-    const version = await getCurrentVersion(pkg_name)
-    await debugLog(`current ver: ${version}`)
-    const updateVersion = await getUpgradeVersion(pkg_name, pkg_registry);
-    await debugLog(`new ver: ${updateVersion}`)
     const cliArguments = getCliArguments();
-    await debugLog(`args: ${cliArguments}`)
+    await execute(`echo "args: ${cliArguments}"`)
+    const version = await getCurrentVersion(pkg_name)
+    await execute(`echo "current ver: ${JSON.stringify(version)}"`)
+    const updateVersion = await getUpgradeVersion(pkg_name, cliArguments);
+    await execute(`echo "new ver: ${updateVersion}"`)
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
@@ -163,5 +166,10 @@ async function deploy() {
 }
 
 (async () => {
-    await deploy()
+    try {
+        await deploy()
+    }
+    catch(e) {
+        core.setFailed(e.toString());
+    }
 })();
