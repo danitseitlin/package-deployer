@@ -1085,7 +1085,7 @@ function configureGitHub(pkgName) {
  */
  async function getUpgradeVersion(pkgName, registry) {
     if(await doesPackageExist(pkgName, registry)) {
-	    const version = await getCurrentVersion(registry);
+	    const version = await getCurrentVersion(pkgName);
 	    if(version.patch < 9) version.patch++;
 	    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
 	    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
