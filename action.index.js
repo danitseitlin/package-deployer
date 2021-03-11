@@ -142,12 +142,12 @@ function parseDeployment(output) {
 async function deploy() {
     await configureNPM(npm_access_token, pkg_registry);
     await configureGitHub(pkg_name)
-    await execute(`echo "new ver: ${updateVersion}"`)
     const cliArguments = getCliArguments();
+    await execute(`echo "args: ${cliArguments}"`)
     const version = await getCurrentVersion(pkg_name)
     await execute(`echo "current ver: ${JSON.stringify(version)}"`)
     const updateVersion = await getUpgradeVersion(pkg_name, cliArguments);
-    await execute(`echo "args: ${cliArguments}"`)
+    await execute(`echo "new ver: ${updateVersion}"`)
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
