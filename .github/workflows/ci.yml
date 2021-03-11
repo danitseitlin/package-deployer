@@ -31,4 +31,5 @@ jobs:
         pkg_registry: https://registry.npmjs.org/
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         dry_run: true
+        debug: true
       
