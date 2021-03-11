@@ -5,7 +5,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.extract_branch.outputs.all }}
+      branch: ${{ steps.extract_branch }}
     steps:
       - name: Extract branch name
         shell: bash
