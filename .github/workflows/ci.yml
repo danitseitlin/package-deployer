@@ -28,7 +28,7 @@ jobs:
     - name: Deploying version
       run: sudo npm-deploy npm-package-deployer --dry-run --publish-pretty-output
   action_deployment:
-    needs: setup 
+    #needs: setup 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
