@@ -166,5 +166,10 @@ async function deploy() {
 }
 
 (async () => {
-    await deploy()
+    try {
+        await deploy()
+    }
+    catch(e) {
+        core.setFailed(e.toString());
+    }
 })();
