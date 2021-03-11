@@ -15,6 +15,14 @@ inputs:
     description: The registry of the package.
     default: https://registry.npmjs.org/
     required: false
+  dry_run:
+    description: If to run the deployment in --dry-run mode. Usually used for Inner Testing.
+    default: false
+    required: false
+  pretty_print:
+    description: If to paste the final deployment message in a prettier way.
+    default: true
+    required: false
 runs:
   using: 'node12'
   main: './dist/index.js'
