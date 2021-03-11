@@ -29,7 +29,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
     - name: Deploying version
-      uses: danitseitlin/npm-package-deployer@${branch}
+      uses: danitseitlin/npm-package-deployer@${{ branch }}
       with:
         pkg_name: npm-package-deployer
         pkg_registry: https://registry.npmjs.org/
