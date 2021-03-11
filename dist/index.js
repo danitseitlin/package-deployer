@@ -1052,9 +1052,9 @@ async function debugLog(msg) {
 
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
-    await execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
+    await execute(`echo "registry=${registry}" >> ".npmrc" && echo "//${registry}:_authToken=${token}" >> ".npmrc"`);
     //Renaming the .npmrc file so NPM will auto detect it
-    await execute(`ls -a || mv "~:.npmrc" .npmrc`);
+    await execute(`ls -a`);
     await debugLog('cat .npmrc')
 }
 
