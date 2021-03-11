@@ -23,6 +23,10 @@ inputs:
     description: If to paste the final deployment message in a prettier way.
     default: true
     required: false
+  debug:
+    description: If to print debug logs
+    default: false
+    required: false
 runs:
   using: 'node12'
   main: './dist/index.js'

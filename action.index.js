@@ -8,12 +8,20 @@ const pkg_name = core.getInput('pkg_name');
 const pkg_registry = core.getInput('pkg_registry');
 const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
+const debug = core.getInput('debug');
+
+function debugLog(msg) {
+    if(debug === 'true' || debug === true)
+        //console.log(msg)
+        execute(`echo "${msg}"`)
+}
 
 function configureNPM(token, registry) {
     //Creating the .npmrc file
     execute(`echo "registry=${registry}" >> ~/.npmrc && echo "//${registry}:_authToken=${token}" >> ~/.npmrc`);
     //Renaming the .npmrc file so NPM will auto detect it
     execute(`ls -a || mv "~:.npmrc" .npmrc`);
+    debugLog('cat .npmrc')
 }
 
 function configureGitHub(pkgName) {
@@ -132,8 +140,11 @@ async function deploy() {
     configureNPM(npm_access_token, pkg_registry);
     configureGitHub(pkg_name)
     const version = await getCurrentVersion(pkg_name)
+    debugLog(`current ver: ${version}`)
     const updateVersion = await getUpgradeVersion(pkg_name, pkg_registry);
+    debugLog(`new ver: ${updateVersion}`)
     const cliArguments = getCliArguments();
+    debugLog(`args: ${cliArguments}`)
     console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
