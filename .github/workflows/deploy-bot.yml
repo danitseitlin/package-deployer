@@ -25,6 +25,6 @@ jobs:
       #run: npm run deploy
       uses: danitseitlin/npm-package-deployer@dtseitlin--making-pkg-as-github-action
       with:
-        pkg_name: google-authenticator-util
+        pkg_name: npm-package-deployer
         pkg_registry: https://registry.npmjs.org/
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
