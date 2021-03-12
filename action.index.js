@@ -1,7 +1,9 @@
 const core = require('@actions/core');
+const { exec } = require('@actions/exec');
 const child_process = require('child_process');
 
 const github_access_token = core.getInput('github_access_token');
+const github_repo_url = core.getInput('github_repo_url');
 const npm_access_token = core.getInput('npm_access_token');
 const pkg_name = core.getInput('pkg_name');
 const pkg_registry = core.getInput('pkg_registry');
@@ -16,6 +18,13 @@ async function configureNPM(token, registry) {
 
 async function configureGitHub(pkgName) {
     await execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
+}
+
+async function releaseGitHubVersion(version, branch, draft, preRelease) {
+    const githubURL = github_repo_url.replace('https://github.com/', '')
+    const tagName = `v${version}`;
+    const body = `Release of v${version}`;
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=:${github_access_token}`)
 }
 
 /**
@@ -130,8 +139,11 @@ function parseDeployment(output) {
  * Deploying pkg version
  */
 async function deploy() {
+    //Configuration section
     await configureNPM(npm_access_token, pkg_registry);
     await configureGitHub(pkg_name)
+
+    //NPM Package deployment section
     const cliArguments = getCliArguments();
     await execute(`echo "args: ${cliArguments}"`)
     const version = await getCurrentVersion(pkg_name)
@@ -153,6 +165,12 @@ async function deploy() {
     }
     else
         console.log(publish)
+
+    //GitHub Release section
+    if(github_repo_url && github_repo_url != "" && github_access_token && github_access_token != "") {
+        //version, branch, draft, preRelease
+        await releaseGitHubVersion(updateVersion, 'master', false, false);
+    }
 }
 
 (async () => {
