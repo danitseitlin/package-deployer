@@ -11,15 +11,31 @@ const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
+/**
+ * Configurating NPM
+ * @param {*} token The NPM auth token
+ * @param {*} registry The NPM registry
+ */
 async function configureNPM(token, registry) {
     //Creating the .npmrc file
     await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
+/**
+ * Configurating GitHub
+ * @param {*} pkgName The name of the pkg
+ */
 async function configureGitHub(pkgName) {
     await execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
 }
 
+/**
+ * Releasing a new GitHub release
+ * @param {*} version The release version
+ * @param {*} branch The branch to release from
+ * @param {*} draft If the release is a draft
+ * @param {*} preRelease If the release is a pre-release
+ */
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
     const githubURL = github_repo_url.replace('https://github.com/', '')
     const tagName = `v${version}`;
