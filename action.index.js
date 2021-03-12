@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const { exec } = require('@actions/exec');
 const child_process = require('child_process');
 
 const github_access_token = core.getInput('github_access_token');
@@ -7,6 +6,7 @@ const github_repo_url = core.getInput('github_repo_url');
 const npm_access_token = core.getInput('npm_access_token');
 const pkg_name = core.getInput('pkg_name');
 const pkg_registry = core.getInput('pkg_registry');
+const pkg_scope = core.getInput('pkg_scope')
 const dry_run = core.getInput('dry_run')
 const pretty_print = core.getInput('pretty_print')
 const debug = core.getInput('debug');
@@ -94,6 +94,8 @@ function getCliArguments() {
     let args = '';
     if(pkg_registry && pkg_registry !== 'registry.npmjs.org')
         args+= ` --registry=${pkg_registry}`;
+    if(pkg_scope && pkg_scope !== '')
+        args+= ` --scope=${pkg_scope}`;
     if(dry_run === 'true' || dry_run === true)
         args+= ` --dry-run`;
     return args;
