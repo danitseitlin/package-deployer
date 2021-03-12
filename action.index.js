@@ -1,14 +1,14 @@
 const core = require('@actions/core');
 const child_process = require('child_process');
 
-const github_access_token = core.getInput('github_access_token');
-const github_repo_url = core.getInput('github_repo_url');
-const npm_access_token = core.getInput('npm_access_token');
-const pkg_name = core.getInput('pkg_name');
-const pkg_registry = core.getInput('pkg_registry');
-const pkg_scope = core.getInput('pkg_scope')
-const dry_run = core.getInput('dry_run')
-const pretty_print = core.getInput('pretty_print')
+const githubAccessToken = core.getInput('github_access_token');
+const githubRepoURL = core.getInput('github_repo_url');
+const npmAccessToken = core.getInput('npm_access_token');
+const pkgName = core.getInput('pkg_name');
+const pkgRegistry = core.getInput('pkg_registry');
+const pkgScope = core.getInput('pkg_scope')
+const dryRun = core.getInput('dry_run')
+const prettyPrint = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
 /**
@@ -17,7 +17,6 @@ const debug = core.getInput('debug');
  * @param {*} registry The NPM registry
  */
 async function configureNPM(token, registry) {
-    //Creating the .npmrc file
     await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
@@ -37,10 +36,10 @@ async function configureGitHub(pkgName) {
  * @param {*} preRelease If the release is a pre-release
  */
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
-    const githubURL = github_repo_url.replace('https://github.com/', '')
+    const githubURL = githubRepoURL.replace('https://github.com/', '')
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=${github_access_token}`)
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=${githubAccessToken}`)
 }
 
 /**
@@ -92,11 +91,11 @@ async function getUpgradeVersion(pkgName, cliArguments) {
  */
 function getCliArguments() {
     let args = '';
-    if(pkg_registry && pkg_registry !== 'registry.npmjs.org')
-        args+= ` --registry=${pkg_registry}`;
-    if(pkg_scope && pkg_scope !== '')
-        args+= ` --scope=${pkg_scope}`;
-    if(dry_run === 'true' || dry_run === true)
+    if(pkgRegistry && pkgRegistry !== 'registry.npmjs.org')
+        args+= ` --registry=${pkgRegistry}`;
+    if(pkgScope && pkgScope !== '')
+        args+= ` --scope=${pkgScope}`;
+    if(dryRun === 'true' || dryRun === true)
         args+= ` --dry-run`;
     return args;
 }
@@ -158,21 +157,21 @@ function parseDeployment(output) {
  */
 async function deploy() {
     //Configuration section
-    await configureNPM(npm_access_token, pkg_registry);
-    await configureGitHub(pkg_name)
+    await configureNPM(npmAccessToken, pkgRegistry);
+    await configureGitHub(pkgName)
 
     //NPM Package deployment section
     const cliArguments = getCliArguments();
     await execute(`echo "args: ${cliArguments}"`)
-    const version = await getCurrentVersion(pkg_name)
+    const version = await getCurrentVersion(pkgName)
     await execute(`echo "current ver: ${JSON.stringify(version)}"`)
-    const updateVersion = await getUpgradeVersion(pkg_name, cliArguments);
+    const updateVersion = await getUpgradeVersion(pkgName, cliArguments);
     await execute(`echo "new ver: ${updateVersion}"`)
-    console.log(`Upgrading ${pkg_name}@${version.major}.${version.minor}.${version.patch} to version ${pkg_name}@${updateVersion}`)
+    console.log(`Upgrading ${pkgName}@${version.major}.${version.minor}.${version.patch} to version ${pkgName}@${updateVersion}`)
     await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
     const publish = await execute(`npm publish${cliArguments}`);
     console.log('==== Publish Output ====')
-    if(pretty_print === 'true' || pretty_print === true) {
+    if(prettyPrint === 'true' || prettyPrint === true) {
         const prettyPublish = parseDeployment(publish);
         const { files, ...rest } = prettyPublish
         for(const item in rest) {
@@ -185,7 +184,7 @@ async function deploy() {
         console.log(publish)
 
     //GitHub Release section
-    if(github_repo_url && github_repo_url != "" && github_access_token && github_access_token != "") {
+    if(githubRepoURL && githubRepoURL != "" && githubAccessToken && githubAccessToken != "") {
         //version, branch, draft, preRelease
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
