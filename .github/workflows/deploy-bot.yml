@@ -17,3 +17,4 @@ jobs:
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         github_access_token: ${{secrets.G_AUTH_TOKEN}}
         github_repo_url: https://github.com/danitseitlin/npm-package-deployer
+        debug: true
