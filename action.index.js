@@ -24,7 +24,7 @@ async function releaseGitHubVersion(version, branch, draft, preRelease) {
     const githubURL = github_repo_url.replace('https://github.com/', '')
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=:${github_access_token}`)
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=${github_access_token}`)
 }
 
 /**
