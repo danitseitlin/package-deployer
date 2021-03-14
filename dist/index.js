@@ -132,7 +132,6 @@ const core = __webpack_require__(470);
 const child_process = __webpack_require__(129);
 
 const githubAccessToken = core.getInput('github_access_token');
-const githubRepoURL = core.getInput('github_repo_url');
 const npmAccessToken = core.getInput('npm_access_token');
 const pkgName = core.getInput('pkg_name');
 const pkgRegistry = core.getInput('pkg_registry');
@@ -166,10 +165,10 @@ async function configureGitHub(pkgName) {
  * @param {*} preRelease If the release is a pre-release
  */
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
-    const githubURL = githubRepoURL.replace('https://github.com/', '')
+    const repoURL = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${githubURL}/releases?access_token=${githubAccessToken}`)
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${repoURL}/releases?access_token=${githubAccessToken}`)
 }
 
 /**
@@ -314,7 +313,7 @@ async function deploy() {
         console.log(publish)
 
     //GitHub Release section
-    if(githubRepoURL && githubRepoURL != "" && githubAccessToken && githubAccessToken != "") {
+    if(githubAccessToken && githubAccessToken != "") {
         //version, branch, draft, preRelease
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
