@@ -5,9 +5,6 @@ inputs:
   github_access_token:
     description: GitHub Access token for authentication. When passed, a release version is released.
     required: false
-  github_repo_url:
-    description: GitHub repo URL. Required when passing the GitHub Access token.
-    required: false
   npm_access_token:
     description: NPM Access token for authentication.
     required: true
