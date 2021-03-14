@@ -36,10 +36,9 @@ async function configureGitHub(pkgName) {
  * @param {*} preRelease If the release is a pre-release
  */
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
-    const repoURL = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}`;
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${repoURL}/releases?access_token=${githubAccessToken}`)
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases?access_token=${githubAccessToken}`)
 }
 
 /**
