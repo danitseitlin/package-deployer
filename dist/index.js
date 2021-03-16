@@ -560,7 +560,7 @@ const child_process = __webpack_require__(129);
 
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
-const pkgName = core.getInput('pkg_name');
+let pkgName = core.getInput('pkg_name');
 const pkgRegistry = core.getInput('pkg_registry');
 const pkgScope = core.getInput('pkg_scope')
 const dryRun = core.getInput('dry_run')
