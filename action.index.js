@@ -38,7 +38,7 @@ async function configureGitHub(pkgName) {
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases?access_token=${githubAccessToken}`)
+    await execute(`curl --header "Authorization: ${githubAccessToken}" --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
 }
 
 /**
