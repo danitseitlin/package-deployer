@@ -577,7 +577,6 @@ async function configureNPM(token, registry) {
     if(pkgScope !== '') {
         pkgName = `@${pkgScope}/${pkgName}`
         await execute(`echo "@${pkgScope}:registry=https://${registry}/${pkgScope}" >> ".npmrc"`);
-    }
     await execute(`echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
