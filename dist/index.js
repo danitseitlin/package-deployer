@@ -573,7 +573,7 @@ const debug = core.getInput('debug');
  * @param {*} registry The NPM registry
  */
 async function configureNPM(token, registry) {
-    await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
+    await execute(`echo "registry=http://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
 /**
