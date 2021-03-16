@@ -652,7 +652,7 @@ async function getUpgradeVersion(pkgName, cliArguments) {
 function getCliArguments() {
     let args = '';
     if(pkgRegistry && pkgRegistry !== 'registry.npmjs.org')
-        args+= ` --registry=${pkgRegistry}`;
+        args+= ` --registry=https://${pkgRegistry}`;
     if(pkgScope && pkgScope !== '')
         args+= ` --scope=@${pkgScope}`;
     if(dryRun === 'true' || dryRun === true)
