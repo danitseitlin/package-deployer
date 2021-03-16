@@ -573,9 +573,11 @@ const debug = core.getInput('debug');
  * @param {*} registry The NPM registry
  */
 async function configureNPM(token, registry) {
-    await execute(`echo "registry=https://${registry}/" >> ".npmrc"`);
-    if(pkgScope !== '')
+    await execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
+    if(pkgScope !== '') {
+        pkgName = `@${pkgScope}/${pkgName}`
         await execute(`echo "@${pkgScope}:registry=https://${registry}/${pkgScope}" >> ".npmrc"`);
+    }
     await execute(`echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
@@ -652,7 +654,7 @@ function getCliArguments() {
     if(pkgRegistry && pkgRegistry !== 'registry.npmjs.org')
         args+= ` --registry=${pkgRegistry}`;
     if(pkgScope && pkgScope !== '')
-        args+= ` --scope=${pkgScope}`;
+        args+= ` --scope=@${pkgScope}`;
     if(dryRun === 'true' || dryRun === true)
         args+= ` --dry-run`;
     return args;
