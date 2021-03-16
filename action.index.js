@@ -17,7 +17,7 @@ const debug = core.getInput('debug');
  * @param {*} registry The NPM registry
  */
 async function configureNPM(token, registry) {
-    await execute(`echo "registry=http://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
+    await execute(`echo "registry=https://${registry}/" >> ".npmrc" && echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
 
 /**
@@ -38,7 +38,7 @@ async function configureGitHub(pkgName) {
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --header 'Authorization: ${githubAccessToken}' --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' -X POST 'https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases'`)
+    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases?access_token=${githubAccessToken}`)
 }
 
 /**
