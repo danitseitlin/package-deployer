@@ -11,7 +11,7 @@ inputs:
     required: false
   package_managers:
       description: A list of deployment apps. i.e. [npm, github]. Available options are npm, github.
-      default: [github]
+      default: '[github]'
       required: true
   github_access_token:
     description: GitHub Access token for authentication. When passed, a release version is released.
