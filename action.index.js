@@ -2,15 +2,19 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const child_process = require('child_process');
 
+const packageManagers = core.getInput('package_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
-let pkgName = core.getInput('pkg_name');
 const pkgRegistry = core.getInput('pkg_registry');
 const pkgScope = core.getInput('pkg_scope')
 const dryRun = core.getInput('dry_run')
 const prettyPrint = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
+const isNPM = packageManagers.indexOf('npm') !== -1;
+const isGitHub = packageManagers.indexOf('github') !== -1;
+
+let pkgName = core.getInput('pkg_name');
 /**
  * Configurating NPM
  * @param {*} token The NPM auth token
@@ -157,11 +161,30 @@ function parseDeployment(output) {
 }
 
 /**
+ * Verifying GitHub action inputs
+ */
+async function verifyInputs() {
+    if(!pkgName || pkgName === '')
+        throw new Error('Missing input "pkg_name"')
+    if(packageManagers.indexOf('npm') !== -1){
+        if(!npmAccessToken || npmAccessToken === '')
+            throw new Error('Mising input "npm_access_token"')
+    }
+    if(packageManagers.indexOf('github') !== -1){
+        if(!githubAccessToken | githubAccessToken === '')
+            throw new Error('Mising input "github_access_token"')
+    }
+}
+
+/**
  * Deploying pkg version
  */
 async function deploy() {
+    //Verifying inputs
+    verifyInputs();
     //Configuration section
-    await configureNPM(npmAccessToken, pkgRegistry);
+    if(isNPM)
+        await configureNPM(npmAccessToken, pkgRegistry);
     await configureGitHub(pkgName)
 
     //NPM Package deployment section
@@ -188,7 +211,7 @@ async function deploy() {
         console.log(publish)
 
     //GitHub Release section
-    if(githubAccessToken && githubAccessToken != "") {
+    if(isGitHub) {
         //version, branch, draft, preRelease
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }

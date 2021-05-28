@@ -2,12 +2,6 @@ name: 'package-deploy-bot'
 description: 'A Github Action for deploying NPM packages'
 author: 'Dani Tseitlin'
 inputs:
-  github_access_token:
-    description: GitHub Access token for authentication. When passed, a release version is released.
-    required: false
-  npm_access_token:
-    description: NPM Access token for authentication.
-    required: true
   pkg_name:
     description: The name of the NPM package.
     required: true
@@ -15,6 +9,16 @@ inputs:
     description: The registry of the package.
     default: registry.npmjs.org
     required: false
+  package_managers:
+      description: A list of deployment apps. i.e. [npm, github]. Available options are npm, github.
+      default: [github]
+      required: true
+  github_access_token:
+    description: GitHub Access token for authentication. When passed, a release version is released.
+    required: false
+  npm_access_token:
+    description: NPM Access token for authentication.
+    required: true
   pkg_scope:
     description: The scope of the package.
     required: false
