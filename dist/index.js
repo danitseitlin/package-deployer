@@ -558,15 +558,19 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const child_process = __webpack_require__(129);
 
+const packageManagers = core.getInput('package_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
-let pkgName = core.getInput('pkg_name');
 const pkgRegistry = core.getInput('pkg_registry');
 const pkgScope = core.getInput('pkg_scope')
 const dryRun = core.getInput('dry_run')
 const prettyPrint = core.getInput('pretty_print')
 const debug = core.getInput('debug');
 
+const isNPM = packageManagers.indexOf('npm') !== -1;
+const isGitHub = packageManagers.indexOf('github') !== -1;
+
+let pkgName = core.getInput('pkg_name');
 /**
  * Configurating NPM
  * @param {*} token The NPM auth token
@@ -599,7 +603,7 @@ async function configureGitHub(pkgName) {
 async function releaseGitHubVersion(version, branch, draft, preRelease) {
     const tagName = `v${version}`;
     const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases?access_token=${githubAccessToken}`)
+    await execute(`curl -H 'Authorization: token ${githubAccessToken}' --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
 }
 
 /**
@@ -713,11 +717,30 @@ function parseDeployment(output) {
 }
 
 /**
+ * Verifying GitHub action inputs
+ */
+async function verifyInputs() {
+    if(!pkgName || pkgName === '')
+        throw new Error('Missing input "pkg_name"')
+    if(packageManagers.indexOf('npm') !== -1){
+        if(!npmAccessToken || npmAccessToken === '')
+            throw new Error('Mising input "npm_access_token"')
+    }
+    if(packageManagers.indexOf('github') !== -1){
+        if(!githubAccessToken | githubAccessToken === '')
+            throw new Error('Mising input "github_access_token"')
+    }
+}
+
+/**
  * Deploying pkg version
  */
 async function deploy() {
+    //Verifying inputs
+    verifyInputs();
     //Configuration section
-    await configureNPM(npmAccessToken, pkgRegistry);
+    if(isNPM)
+        await configureNPM(npmAccessToken, pkgRegistry);
     await configureGitHub(pkgName)
 
     //NPM Package deployment section
@@ -744,7 +767,7 @@ async function deploy() {
         console.log(publish)
 
     //GitHub Release section
-    if(githubAccessToken && githubAccessToken != "") {
+    if(isGitHub) {
         //version, branch, draft, preRelease
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
@@ -758,6 +781,7 @@ async function deploy() {
         core.setFailed(e.toString());
     }
 })();
+
 
 /***/ }),
 
