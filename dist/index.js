@@ -595,23 +595,25 @@ async function configureGitHub(pkgName) {
 
 /**
  * Releasing a new GitHub release
- * @param {*} version The release version
+ * @param {*} tagName The release version
  * @param {*} branch The branch to release from
  * @param {*} draft If the release is a draft
  * @param {*} preRelease If the release is a pre-release
  */
-async function releaseGitHubVersion(version, branch, draft, preRelease) {
-    const tagName = `v${version}`;
-    const body = `Release of v${version}`;
+async function releaseGitHubVersion(tagName, branch, draft, preRelease) {
+    const body = `Release of v${tagName}`;
     if(debug)
         console.log(`Releasing GitHub version ${tagName}`)
     if(!dryRun)
         await execute(`curl -H 'Authorization: token ${githubAccessToken}' --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
 }
 
+/**
+ * Retrieving all the GitHub versions
+ * @returns An array object of the GitHub releases
+ */
 async function getGitHubVersions() {
     const res = (await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)).stdout;
-    console.log(res)
     return JSON.parse(res)
 }
 
@@ -779,8 +781,7 @@ async function deploy() {
     if(isGitHub) {
         //version, branch, draft, preRelease
         const updateVersion = (await getGitHubVersions())[0].tag_name;
-        console.log(updateVersion)
-        //await releaseGitHubVersion(updateVersion, 'master', false, false);
+        await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
 }
 
