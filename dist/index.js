@@ -739,14 +739,14 @@ async function deploy(data) {
         });
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments();
-        await utils.execute(`echo "args: ${cliArguments}"`)
+        await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
         const version = await npm.getCurrentVersion(data.pkgName)
-        await utils.execute(`echo "current ver: ${JSON.stringify(version)}"`)
+        await utils.execute(`echo "current ver: ${JSON.stringify(version)}"`, data.debug)
         const updateVersion = await npm.getUpgradeVersion(data.pkgName, cliArguments);
-        await utils.execute(`echo "new ver: ${updateVersion}"`)
+        await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         console.log(`Upgrading ${data.pkgName}@${version.major}.${version.minor}.${version.patch} to version ${data.pkgName}@${updateVersion}`)
-        await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
-        const publish = await utils.execute(`npm publish${cliArguments}`);
+        await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
+        const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
         if(data.prettyPrint === 'true' || data.prettyPrint === true) {
             const prettyPublish = npm.parseDeployment(publish);
@@ -4400,12 +4400,13 @@ const child_process = __webpack_require__(129);
 /**
  * Executing a shell command
  * @param command The command
+ * @param isDebug If to print extra debug logs. Default: false
  */
-async function execute(command) {
+async function execute(command, isDebug = false) {
     return new Promise((done, failed) => {
         child_process.exec(command, (error, stdout, stderr) => {
             if (error !== null) failed(error)
-            if(debug === 'true' || debug === true)
+            if(isDebug === 'true' || isDebug === true)
                 console.log({ command, stdout, stderr })
         	done({ stdout, stderr })
         })
