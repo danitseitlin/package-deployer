@@ -17,7 +17,7 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run pkg-build && sudo npm link
     - name: Deploying version
-      run: sudo deploy-pkg npm-package-deployer --dry-run --publish-pretty-output
+      run: sudo deploy-pkg npm-package-deployer --dry-run --publish-pretty-output --debug
   action_deployment:
     runs-on: ubuntu-latest
     steps:
