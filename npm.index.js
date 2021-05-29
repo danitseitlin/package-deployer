@@ -31,16 +31,16 @@ const deployment = require('./src/deployment')
             else {
                 const data = {
                     pkgName: packageName,
-                    debug: cliArguments.find(arg => arg.includes('--debug')),
-                    prettyPrint: cliArguments.find(arg => arg.includes('--pretty-print')),
-                    dryRun: cliArguments.find(arg => arg.includes('--dry-run'))
+                    debug: cliArguments.find(arg => arg.includes('--debug')) !== undefined,
+                    prettyPrint: cliArguments.find(arg => arg.includes('--pretty-print')) !== undefined,
+                    dryRun: cliArguments.find(arg => arg.includes('--dry-run')) !== undefined
                 }
-                data.npm = cliArguments.find(arg => arg.includes('--npm-access-token')) ? {
+                data.npm = cliArguments.find(arg => arg.includes('--npm-access-token')) !== undefined ? {
                     token: cliArguments.find(arg => arg.includes('--npm-access-token')).split('=')[1],
                     registry: cliArguments.find(arg => arg.includes('--npm-registry')).split('=')[1],
                     scope: cliArguments.find(arg => arg.includes('--npm-scope')).split('=')[1]
                 }: undefined;
-                data.github = cliArguments.find(arg => arg.includes('--github-access-token')) ? {
+                data.github = cliArguments.find(arg => arg.includes('--github-access-token')) !== undefined ? {
                     token: cliArguments.find(arg => arg.includes('--github-access-token')).split('=')[1]
                 }: undefined;
 
