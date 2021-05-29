@@ -44,7 +44,8 @@ async function configureGitHub(pkgName) {
  * @param {*} draft If the release is a draft
  * @param {*} preRelease If the release is a pre-release
  */
-async function releaseGitHubVersion(tagName, branch, draft, preRelease) {
+async function releaseGitHubVersion(version, branch, draft, preRelease) {
+    const tagName = `v${version}`;
     const body = `Release of v${tagName}`;
     if(debug)
         console.log(`Releasing GitHub version ${tagName}`)
@@ -81,13 +82,7 @@ async function getGitHubVersions() {
  * @param cliArguments The additional cli arguments
  */
  async function getCurrentVersion(pkgName) {
-    const stdout = (await execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
-    const split = stdout.split('.');
-	return {
-		major: parseInt(split[0]),
-		minor: parseInt(split[split.length-2]),
-		patch: parseInt(split[split.length-1])
-	}
+    return (await execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
 }
 
 /**
@@ -96,13 +91,28 @@ async function getGitHubVersions() {
  */
 async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
-	    const version = await getCurrentVersion(pkgName);
-	    if(version.patch < 9) version.patch++;
-	    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
-	    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
-        return `${version.major}.${version.minor}.${version.patch}`
+	    const version = getNextVersion(await getCurrentVersion(pkgName));
+        return version;
     }
     return '0.0.1';
+}
+
+/**
+ * Retrieve the next version
+ * @param {*} currentVersion The current version to upgrade from 
+ * @returns The next version of a release
+ */
+function getNextVersion(currentVersion) {
+    const split = currentVersion.split('.');
+	const version = {
+		major: parseInt(split[0]),
+		minor: parseInt(split[split.length-2]),
+		patch: parseInt(split[split.length-1])
+	}
+    if(version.patch < 9) version.patch++;
+	else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
+	else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
+    return `${version.major}.${version.minor}.${version.patch}`
 }
 
 /***
@@ -224,7 +234,8 @@ async function deploy() {
     //GitHub Release section
     if(isGitHub) {
         //version, branch, draft, preRelease
-        const updateVersion = (await getGitHubVersions())[0].tag_name;
+        const currentVersion = (await getGitHubVersions())[0].tag_name.replace('v', '');
+        const updateVersion = getNextVersion(currentVersion);
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
 }
