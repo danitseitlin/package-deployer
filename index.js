@@ -46,7 +46,7 @@ const deployment = require('./src/deployment')
 /**
  * Verifying GitHub action inputs
  */
- async function verifyInputs(data) {
+async function verifyInputs(data) {
     if(!data.pkgName || data.pkgName === '')
         throw new Error('Missing input "pkg_name"')
     if(data.npm){
