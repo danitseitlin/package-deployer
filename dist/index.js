@@ -610,7 +610,7 @@ async function releaseGitHubVersion(version, branch, draft, preRelease) {
 }
 
 async function getGitHubVersions() {
-    const res = await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`);
+    const res = (await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)).stdout;
     console.log(res)
     return JSON.parse(res)
 }
@@ -780,7 +780,7 @@ async function deploy() {
         //version, branch, draft, preRelease
         const updateVersion = await getGitHubVersions();
         console.log(updateVersion)
-        await releaseGitHubVersion(updateVersion, 'master', false, false);
+        //await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
 }
 
