@@ -35,13 +35,17 @@ const deployment = require('./src/deployment')
                     prettyPrint: cliArguments.find(arg => arg.includes('--pretty-print')) !== undefined,
                     dryRun: cliArguments.find(arg => arg.includes('--dry-run')) !== undefined
                 }
-                data.npm = cliArguments.find(arg => arg.includes('--npm-access-token')) !== undefined ? {
-                    token: cliArguments.find(arg => arg.includes('--npm-access-token')).split('=')[1],
-                    registry: cliArguments.find(arg => arg.includes('--npm-registry')).split('=')[1],
-                    scope: cliArguments.find(arg => arg.includes('--npm-scope')).split('=')[1]
+                const npmToken = cliArguments.find(arg => arg.includes('--npm-access-token'));
+                const npmRegistry = cliArguments.find(arg => arg.includes('--npm-registry'));
+                const npmScope = cliArguments.find(arg => arg.includes('--npm-scope'));
+                data.npm = npmToken !== undefined ? {
+                    token: npmToken ? npmToken.split('=')[1]: undefined,
+                    registry: npmRegistry ? npmRegistry.split('=')[1]: undefined,
+                    scope: npmScope ? npmScope.split('=')[1]: undefined
                 }: undefined;
-                data.github = cliArguments.find(arg => arg.includes('--github-access-token')) !== undefined ? {
-                    token: cliArguments.find(arg => arg.includes('--github-access-token')).split('=')[1]
+                const githubToken = cliArguments.find(arg => arg.includes('--github-access-token'));
+                data.github = githubToken !== undefined ? {
+                    token: githubToken ? githubToken.split('=')[1]: undefined
                 }: undefined;
 
                 console.log(data)
