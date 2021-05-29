@@ -2,14 +2,14 @@
   "name": "npm-package-deployer",
   "version": "0.1.0",
   "description": "A useful tool to deploy an NPM version via CLI",
-  "main": "lib/npm.index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "pre-deploy": "npm run build && npm run clean",
     "deploy": "deploy-pkg npm-package-deployer",
     "clean": "rmdir lib /s/q",
     "action-build": "ncc build action.index.js -o dist && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
-    "pkg-build": "ncc build index.js -o lib",
+    "pkg-build": "ncc build npm.index.js -o lib",
     "build-and-commit": "git add . && npm run action-build && git push origin HEAD"
   },
   "repository": {
