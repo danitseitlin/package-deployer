@@ -23,7 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setting up the environment
-      run: npm install && sudo npm link
+      run: npm install
     - name: Deploying version
       uses: ./
       with:
