@@ -28,7 +28,8 @@
 Run `npm install npm-package-deployer`
 ## :clap: Basic usage
 Run `deploy-pkg <package name>` to deploy an automatic version locally. Here are available flags:
-| CLI argument | Explanation |
+
+| CLI argument          | Explanation                                                       |
 |---------------------- |------------------------------------------------------------------ |
 | --npm-access-token    | The NPM access token. Required for NPM package deployments.       |
 | --npm-registry        | The NPM registry. Default: registry.npmjs.org                     |
