@@ -742,33 +742,33 @@ async function deploy() {
     //Verifying inputs
     verifyInputs();
     //Configuration section
-    if(isNPM)
-        await configureNPM(npmAccessToken, npmRegistry);
     await configureGitHub(pkgName)
-
-    //NPM Package deployment section
-    const cliArguments = getCliArguments();
-    await execute(`echo "args: ${cliArguments}"`)
-    const version = await getCurrentVersion(pkgName)
-    await execute(`echo "current ver: ${JSON.stringify(version)}"`)
-    const updateVersion = await getUpgradeVersion(pkgName, cliArguments);
-    await execute(`echo "new ver: ${updateVersion}"`)
-    console.log(`Upgrading ${pkgName}@${version.major}.${version.minor}.${version.patch} to version ${pkgName}@${updateVersion}`)
-    await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
-    const publish = await execute(`npm publish${cliArguments}`);
-    console.log('==== Publish Output ====')
-    if(prettyPrint === 'true' || prettyPrint === true) {
-        const prettyPublish = parseDeployment(publish);
-        const { files, ...rest } = prettyPublish
-        for(const item in rest) {
-            console.log(`${item}: ${rest[item].toString()}`)
+    if(isNPM) {
+        await configureNPM(npmAccessToken, npmRegistry);
+    
+        //NPM Package deployment section
+        const cliArguments = getCliArguments();
+        await execute(`echo "args: ${cliArguments}"`)
+        const version = await getCurrentVersion(pkgName)
+        await execute(`echo "current ver: ${JSON.stringify(version)}"`)
+        const updateVersion = await getUpgradeVersion(pkgName, cliArguments);
+        await execute(`echo "new ver: ${updateVersion}"`)
+        console.log(`Upgrading ${pkgName}@${version.major}.${version.minor}.${version.patch} to version ${pkgName}@${updateVersion}`)
+        await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
+        const publish = await execute(`npm publish${cliArguments}`);
+        console.log('==== Publish Output ====')
+        if(prettyPrint === 'true' || prettyPrint === true) {
+            const prettyPublish = parseDeployment(publish);
+            const { files, ...rest } = prettyPublish
+            for(const item in rest) {
+                console.log(`${item}: ${rest[item].toString()}`)
+            }
+            console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+            console.log('========================')
         }
-        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
-        console.log('========================')
+        else
+            console.log(publish)
     }
-    else
-        console.log(publish)
-
     //GitHub Release section
     if(isGitHub) {
         //version, branch, draft, preRelease
