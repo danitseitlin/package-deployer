@@ -8,14 +8,18 @@ const deployment = require('./src/deployment')
  */
  async function verifyInputs(data) {
     if(!data.pkgName || data.pkgName === '')
-        throw new Error('Missing input "pkg_name"')
+        throw new Error('Missing input "pkg_name"');
     if(data.npm){
         if(!data.npm.token || data.npm.token === '')
-            throw new Error('Mising input "npm_access_token"')
+            throw new Error('Mising input "npm_access_token"');
     }
     if(data.github){
         if(!data.github.token || data.github.token === '')
-            throw new Error('Mising input "github_access_token"')
+            throw new Error('Mising input "github_access_token"');
+        if(!data.github.owner || data.github.owner === '')
+            throw new Error('Mising input "github_owner"');
+        if(!data.github.repo || data.github.repo === '')
+            throw new Error('Mising input "github_repo"');
     }
 }
 
