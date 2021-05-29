@@ -29,22 +29,18 @@ const deployment = require('./src/deployment')
             if(packageName === '--help')
                 utils.printHelp();
             else {
-                // const cli = new PackageCli(packageName)
-                // if(!await cli.isAuthenticated())
-                //     throw Error('Auth is required!')
-                // await cli.upgradePackage(cliArguments);
                 const data = {
                     pkgName: packageName,
-                    debug: cliArguments.includes('--debug'),
-                    prettyPrint: cliArguments.includes('--pretty-print'),
-                    dryRun: cliArguments.includes('--dry-run')
+                    debug: cliArguments.find(arg => arg.includes('--debug')),
+                    prettyPrint: cliArguments.find(arg => arg.includes('--pretty-print')),
+                    dryRun: cliArguments.find(arg => arg.includes('--dry-run'))
                 }
-                data.npm = cliArguments.includes('--npm-access-token') ? {
+                data.npm = cliArguments.find(arg => arg.includes('--npm-access-token')) ? {
                     token: cliArguments.find(arg => arg.includes('--npm-access-token')).split('=')[1],
                     registry: cliArguments.find(arg => arg.includes('--npm-registry')).split('=')[1],
                     scope: cliArguments.find(arg => arg.includes('--npm-scope')).split('=')[1]
                 }: undefined;
-                data.github = cliArguments.includes('--github-access-token') ? {
+                data.github = cliArguments.find(arg => arg.includes('--github-access-token')) ? {
                     token: cliArguments.find(arg => arg.includes('--github-access-token')).split('=')[1]
                 }: undefined;
                 //Verifying inputs
