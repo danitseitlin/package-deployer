@@ -54,7 +54,7 @@ async function releaseGitHubVersion(version, branch, draft, preRelease) {
 }
 
 async function getGitHubVersions() {
-    return JSON.parse(await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)).stdout.replace('\n', '')
+    return JSON.parse(await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`).stdout.replace('\n', ''))
 }
 
 /**
