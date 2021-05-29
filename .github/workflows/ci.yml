@@ -28,7 +28,7 @@ jobs:
       uses: ./
       with:
         pkg_name: npm-package-deployer
-        package_managers: '[github, npm]'
+        pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         github_access_token: ${{secrets.G_AUTH_TOKEN}}

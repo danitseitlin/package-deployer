@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const child_process = require('child_process');
 
-const packageManagers = core.getInput('package_managers');
+const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
 const npmRegistry = core.getInput('npm_registry');

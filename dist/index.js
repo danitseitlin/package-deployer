@@ -558,7 +558,7 @@ const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const child_process = __webpack_require__(129);
 
-const packageManagers = core.getInput('package_managers');
+const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
 const npmRegistry = core.getInput('npm_registry');
