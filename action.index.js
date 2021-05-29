@@ -1,4 +1,5 @@
 const deployment = require('./src/deployment')
+const github = require('@actions/github');
 
 const core = require('@actions/core');
 const packageManagers = core.getInput('pkg_managers');

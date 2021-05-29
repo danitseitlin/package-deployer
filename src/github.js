@@ -1,5 +1,4 @@
 const utils = require('./utils');
-const github = require('@actions/github');
 
 /**
  * Configurating GitHub

@@ -557,6 +557,7 @@ exports.debug = debug; // for test
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
 const deployment = __webpack_require__(294)
+const github = __webpack_require__(469);
 
 const core = __webpack_require__(470);
 const packageManagers = core.getInput('pkg_managers');
@@ -4809,7 +4810,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "releaseGitHubVersion", function() { return releaseGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
 const utils = __webpack_require__(543);
-const github = __webpack_require__(469);
 
 /**
  * Configurating GitHub
