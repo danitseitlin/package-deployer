@@ -743,11 +743,11 @@ async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const version = await npm.getCurrentVersion(data.pkgName)
-        await utils.execute(`echo "current ver: ${JSON.stringify(version)}"`, data.debug)
+        const currentVersion = await npm.getCurrentVersion(data.pkgName)
+        await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const updateVersion = await npm.getUpgradeVersion(data.pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${data.pkgName}@${version.major}.${version.minor}.${version.patch} to version ${data.pkgName}@${updateVersion}`)
+        console.log(`Upgrading ${data.pkgName}@${currentVersion} to version ${data.pkgName}@${updateVersion}`)
         await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
