@@ -40,8 +40,8 @@ const deployment = require('./src/deployment')
                 const npmScope = cliArguments.find(arg => arg.includes('--npm-scope'));
                 data.npm = npmToken !== undefined ? {
                     token: npmToken ? npmToken.split('=')[1]: undefined,
-                    registry: npmRegistry ? npmRegistry.split('=')[1]: undefined,
-                    scope: npmScope ? npmScope.split('=')[1]: undefined
+                    registry: npmRegistry ? npmRegistry.split('=')[1]: 'registry.npmjs.org',
+                    scope: npmScope ? npmScope.split('=')[1]: ''
                 }: undefined;
                 const githubToken = cliArguments.find(arg => arg.includes('--github-access-token'));
                 data.github = githubToken !== undefined ? {
