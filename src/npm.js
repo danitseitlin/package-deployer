@@ -1,3 +1,5 @@
+const utils = require('./utils')
+
 /**
  * Configurating NPM
  * @param {*} token The NPM auth token

@@ -1,6 +1,6 @@
-const utils = require('./utils')
+const utils = require('./utils');
 const github = require('./github');
-const npm = require('./npm')
+const npm = require('./npm');
 
 /**
  * Deploying pkg version

@@ -719,9 +719,9 @@ function register(state, name, method, options) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deploy", function() { return deploy; });
-const utils = __webpack_require__(543)
+const utils = __webpack_require__(543);
 const github = __webpack_require__(790);
-const npm = __webpack_require__(625)
+const npm = __webpack_require__(625);
 
 /**
  * Deploying pkg version
@@ -4448,6 +4448,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCliArguments", function() { return getCliArguments; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doesPackageExist", function() { return doesPackageExist; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseDeployment", function() { return parseDeployment; });
+const utils = __webpack_require__(543)
+
 /**
  * Configurating NPM
  * @param {*} token The NPM auth token
@@ -4788,7 +4790,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureGitHub", function() { return configureGitHub; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "releaseGitHubVersion", function() { return releaseGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
-const utils = __webpack_require__(543)
+const utils = __webpack_require__(543);
 const github = __webpack_require__(469);
 
 /**
