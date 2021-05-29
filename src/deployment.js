@@ -17,7 +17,7 @@ export async function deploy(data) {
             scope: data.npm.scope
         });
         //NPM Package deployment section
-        const cliArguments = npm.getCliArguments();
+        const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
         const version = await npm.getCurrentVersion(data.pkgName)
         await utils.execute(`echo "current ver: ${JSON.stringify(version)}"`, data.debug)

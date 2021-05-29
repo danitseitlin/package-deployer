@@ -738,7 +738,7 @@ async function deploy(data) {
             scope: data.npm.scope
         });
         //NPM Package deployment section
-        const cliArguments = npm.getCliArguments();
+        const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
         const version = await npm.getCurrentVersion(data.pkgName)
         await utils.execute(`echo "current ver: ${JSON.stringify(version)}"`, data.debug)
@@ -4505,13 +4505,13 @@ function getNextVersion(currentVersion) {
 /***
  * Retrieving the args for the CLI commands
  */
-function getCliArguments() {
+function getCliArguments(data) {
     let args = '';
-    if(npmRegistry && npmRegistry !== 'registry.npmjs.org')
-        args += ` --registry=https://${npmRegistry}`;
-    if(npmScope && npmScope !== '')
-        args += ` --scope=@${npmScope}`;
-    if(dryRun === 'true' || dryRun === true)
+    if(data.npm.registry && data.npm.registry !== 'registry.npmjs.org')
+        args += ` --registry=https://${data.npm.registry}`;
+    if(data.npm.scope && data.npm.scope !== '')
+        args += ` --scope=@${data.npm.scope}`;
+    if(data.dryRun === 'true' || data.dryRun === true)
         args += ` --dry-run`;
     return args;
 }

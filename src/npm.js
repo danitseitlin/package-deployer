@@ -55,13 +55,13 @@ export function getNextVersion(currentVersion) {
 /***
  * Retrieving the args for the CLI commands
  */
-export function getCliArguments() {
+export function getCliArguments(data) {
     let args = '';
-    if(npmRegistry && npmRegistry !== 'registry.npmjs.org')
-        args += ` --registry=https://${npmRegistry}`;
-    if(npmScope && npmScope !== '')
-        args += ` --scope=@${npmScope}`;
-    if(dryRun === 'true' || dryRun === true)
+    if(data.npm.registry && data.npm.registry !== 'registry.npmjs.org')
+        args += ` --registry=https://${data.npm.registry}`;
+    if(data.npm.scope && data.npm.scope !== '')
+        args += ` --scope=@${data.npm.scope}`;
+    if(data.dryRun === 'true' || data.dryRun === true)
         args += ` --dry-run`;
     return args;
 }
