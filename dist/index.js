@@ -4457,7 +4457,7 @@ const utils = __webpack_require__(543)
  */
 async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
-    if(npmScope !== '') {
+    if(data.scope !== '') {
         pkgName = `@${data.scope}/${data.pkgName}`
         await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
     }
