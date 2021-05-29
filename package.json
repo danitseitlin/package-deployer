@@ -10,7 +10,7 @@
     "deploy": "npm-deploy npm-package-deployer",
     "clean": "rmdir lib /s/q",
     "action-build": "ncc build action.index.js && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
-    "build-and-commit": "git add . && npm run action-build && git push"
+    "build-and-commit": "git add . && npm run action-build && git push origin HEAD"
   },
   "repository": {
     "type": "git",
