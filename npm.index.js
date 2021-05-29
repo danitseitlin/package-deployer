@@ -60,30 +60,3 @@ const deployment = require('./src/deployment')
         throw Error(error);
     }
 })();
-
-/**
- * (async () => {
-    try {
-        const data = {
-            pkgName: pkgName,
-            debug: debug,
-            prettyPrint: prettyPrint,
-            dryRun: dryRun
-        }
-        data.npm = isNPM ? {
-            token: npmAccessToken,
-            registry: npmRegistry,
-            scope: npmScope
-        }: undefined;
-        data.github = isGitHub ? {
-            token: githubAccessToken
-        }: undefined;
-        //Verifying inputs
-        verifyInputs(data);
-        await deployment.deploy(data);
-    }
-    catch(e) {
-        core.setFailed(e.toString());
-    }
-    })();
- */
