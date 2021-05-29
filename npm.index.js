@@ -51,8 +51,8 @@ const deployment = require('./src/deployment')
                 const githubOwner = cliArguments.find(arg => arg.includes('--github-owner'));
                 const githubRepo = cliArguments.find(arg => arg.includes('--github-repo'));
                 data.github = githubToken !== undefined ? {
-                    owner: githubOwner,
-                    repo: githubRepo,
+                    owner: githubOwner ? githubOwner.split('=')[1]: undefined,
+                    repo: githubRepo ? githubRepo.split('=')[1]: undefined,
                     token: githubToken ? githubToken.split('=')[1]: undefined
                 }: undefined;
 
