@@ -43,6 +43,8 @@ const deployment = require('./src/deployment')
                 data.github = cliArguments.find(arg => arg.includes('--github-access-token')) ? {
                     token: cliArguments.find(arg => arg.includes('--github-access-token')).split('=')[1]
                 }: undefined;
+
+                console.log(data)
                 //Verifying inputs
                 verifyInputs(data);
                 await deployment.deploy(data);
