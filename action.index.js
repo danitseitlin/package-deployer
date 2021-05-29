@@ -220,7 +220,8 @@ async function deploy() {
     //GitHub Release section
     if(isGitHub) {
         //version, branch, draft, preRelease
-        const updateVersion = await getGitHubVersions()[0].tag_name;
+        const updateVersion = await getGitHubVersions();
+        console.log(updateVersion)
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
 }
