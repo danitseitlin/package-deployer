@@ -43,6 +43,8 @@ async function verifyInputs(data) {
             scope: npmScope
         }: undefined;
         data.github = isGitHub ? {
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
             token: githubAccessToken
         }: undefined;
         //Verifying inputs

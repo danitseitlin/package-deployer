@@ -42,10 +42,12 @@ export async function deploy(data) {
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const currentVersion = (await github.getGitHubVersions())[0].tag_name.replace('v', '');
+        const currentVersion = (await github.getGitHubVersions(data.github))[0].tag_name.replace('v', '');
         const updateVersion = npm.getNextVersion(currentVersion);
         //await github.releaseGitHubVersion(updateVersion, 'master', false, false); //version, branch, draft, preRelease, debug, dryRun
         await github.releaseGitHubVersion({
+            owner: data.github.owner,
+            repo: data.github.repo,
             token: data.github.token,
             version: updateVersion,
             branch: 'master',

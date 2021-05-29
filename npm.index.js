@@ -44,7 +44,11 @@ const deployment = require('./src/deployment')
                     scope: npmScope ? npmScope.split('=')[1]: ''
                 }: undefined;
                 const githubToken = cliArguments.find(arg => arg.includes('--github-access-token'));
+                const githubOwner = cliArguments.find(arg => arg.includes('--github-owner'));
+                const githubRepo = cliArguments.find(arg => arg.includes('--github-repo'));
                 data.github = githubToken !== undefined ? {
+                    owner: githubOwner,
+                    repo: githubRepo,
                     token: githubToken ? githubToken.split('=')[1]: undefined
                 }: undefined;
 

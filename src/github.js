@@ -22,14 +22,14 @@ export async function releaseGitHubVersion(data) {
     if(data.debug)
         console.log(`Releasing GitHub version ${tagName}`)
     if(!data.dryRun)
-        await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
+        await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
 }
 
 /**
  * Retrieving all the GitHub versions
  * @returns An array object of the GitHub releases
  */
-export async function getGitHubVersions() {
-    const res = (await utils.execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)).stdout;
+export async function getGitHubVersions(data) {
+    const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
 }

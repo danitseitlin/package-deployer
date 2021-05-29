@@ -601,6 +601,8 @@ async function verifyInputs(data) {
             scope: npmScope
         }: undefined;
         data.github = isGitHub ? {
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
             token: githubAccessToken
         }: undefined;
         //Verifying inputs
@@ -763,10 +765,12 @@ async function deploy(data) {
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const currentVersion = (await github.getGitHubVersions())[0].tag_name.replace('v', '');
+        const currentVersion = (await github.getGitHubVersions(data.github))[0].tag_name.replace('v', '');
         const updateVersion = npm.getNextVersion(currentVersion);
         //await github.releaseGitHubVersion(updateVersion, 'master', false, false); //version, branch, draft, preRelease, debug, dryRun
         await github.releaseGitHubVersion({
+            owner: data.github.owner,
+            repo: data.github.repo,
             token: data.github.token,
             version: updateVersion,
             branch: 'master',
@@ -4828,15 +4832,15 @@ async function releaseGitHubVersion(data) {
     if(data.debug)
         console.log(`Releasing GitHub version ${tagName}`)
     if(!data.dryRun)
-        await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
+        await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
 }
 
 /**
  * Retrieving all the GitHub versions
  * @returns An array object of the GitHub releases
  */
-async function getGitHubVersions() {
-    const res = (await utils.execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)).stdout;
+async function getGitHubVersions(data) {
+    const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
 }
 
