@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as chalk from 'chalk'
-import { execute } from './src/utils'
+import { execute } from './src/utils-ts'
 export class PackageCli {
     constructor(public name: string) {}
 
