@@ -2,7 +2,6 @@
 
 const utils = require('./src/utils');
 const deployment = require('./src/deployment')
-import { PackageCli, printHelp } from './cli';
 
 (async () => {
     try {
