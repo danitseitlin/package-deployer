@@ -15,7 +15,7 @@ jobs:
       env:
         NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
     - name: Setting up the environment
-      run: npm install && npm run build && sudo npm link
+      run: npm install && npm run pkg-build && sudo npm link
     - name: Deploying version
       run: sudo deploy-pkg npm-package-deployer --dry-run --publish-pretty-output
   action_deployment:
