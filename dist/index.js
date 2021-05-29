@@ -4437,14 +4437,23 @@ module.exports = require("path");
 /***/ }),
 
 /***/ 625:
-/***/ (function() {
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureNPM", function() { return configureNPM; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentVersion", function() { return getCurrentVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUpgradeVersion", function() { return getUpgradeVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextVersion", function() { return getNextVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCliArguments", function() { return getCliArguments; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doesPackageExist", function() { return doesPackageExist; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseDeployment", function() { return parseDeployment; });
 /**
  * Configurating NPM
  * @param {*} token The NPM auth token
  * @param {*} registry The NPM registry
  */
- async function configureNPM(data) {
+async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
     if(npmScope !== '') {
         pkgName = `@${data.scope}/${data.pkgName}`
@@ -4457,7 +4466,7 @@ module.exports = require("path");
  * Retrieving the current version of the package
  * @param cliArguments The additional cli arguments
  */
- async function getCurrentVersion(pkgName) {
+async function getCurrentVersion(pkgName) {
     return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
 }
 

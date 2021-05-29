@@ -3,7 +3,7 @@
  * @param {*} token The NPM auth token
  * @param {*} registry The NPM registry
  */
- async function configureNPM(data) {
+export async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
     if(npmScope !== '') {
         pkgName = `@${data.scope}/${data.pkgName}`
@@ -16,7 +16,7 @@
  * Retrieving the current version of the package
  * @param cliArguments The additional cli arguments
  */
- async function getCurrentVersion(pkgName) {
+export async function getCurrentVersion(pkgName) {
     return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
 }
 
@@ -24,7 +24,7 @@
  * Retrieving the version of the current package
  * @param cliArguments The additional CLI arguments
  */
-async function getUpgradeVersion(pkgName, cliArguments) {
+export async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
 	    const version = getNextVersion(await getCurrentVersion(pkgName));
         return version;
@@ -37,7 +37,7 @@ async function getUpgradeVersion(pkgName, cliArguments) {
  * @param {*} currentVersion The current version to upgrade from 
  * @returns The next version of a release
  */
-function getNextVersion(currentVersion) {
+export function getNextVersion(currentVersion) {
     const split = currentVersion.split('.');
 	const version = {
 		major: parseInt(split[0]),
@@ -53,7 +53,7 @@ function getNextVersion(currentVersion) {
 /***
  * Retrieving the args for the CLI commands
  */
-function getCliArguments() {
+export function getCliArguments() {
     let args = '';
     if(npmRegistry && npmRegistry !== 'registry.npmjs.org')
         args += ` --registry=https://${npmRegistry}`;
@@ -68,7 +68,7 @@ function getCliArguments() {
  * Checking if the pacakge exists in the relevant NPM registry
  * @param cliArguments The additional CLI arguments
  */
-async function doesPackageExist(pkgName, cliArguments) {
+export async function doesPackageExist(pkgName, cliArguments) {
     const arrayArguments = cliArguments.split(' ')
     const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
@@ -87,7 +87,7 @@ async function doesPackageExist(pkgName, cliArguments) {
  * Parsing the publish output to a more pretified version
  * @param output The publish output
  */
-function parseDeployment(output) {
+export function parseDeployment(output) {
     const split = output.stderr.split('\n');
     const name = split.find(item => item.includes('name'))
     const version = split.find(item => item.includes('version'))
