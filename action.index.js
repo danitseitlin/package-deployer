@@ -24,7 +24,7 @@ async function verifyInputs(data) {
             throw new Error('Mising input "npm_access_token"')
     }
     if(data.github){
-        if(!data.github.token | data.github.token === '')
+        if(!data.github.token || data.github.token === '')
             throw new Error('Mising input "github_access_token"')
     }
 }

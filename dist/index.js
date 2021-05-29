@@ -582,7 +582,7 @@ async function verifyInputs(data) {
             throw new Error('Mising input "npm_access_token"')
     }
     if(data.github){
-        if(!data.github.token | data.github.token === '')
+        if(!data.github.token || data.github.token === '')
             throw new Error('Mising input "github_access_token"')
     }
 }
@@ -4395,6 +4395,7 @@ exports.HttpClient = HttpClient;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "execute", function() { return execute; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printHelp", function() { return printHelp; });
 const child_process = __webpack_require__(129);
 
 /**
@@ -4411,6 +4412,19 @@ async function execute(command, isDebug = false) {
         	done({ stdout, stderr })
         })
     })
+}
+
+/**
+ * Printing the help message
+ */
+async function printHelp() {
+    console.log(chalk.magenta('In order to deploy a version, run the following command:'))
+    console.log(chalk.white('deploy-pkg <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
+    console.log(chalk.white('for help, run deploy-pkg --help'))
+    console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
 }
 
 /***/ }),

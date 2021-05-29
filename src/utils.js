@@ -15,3 +15,16 @@ export async function execute(command, isDebug = false) {
         })
     })
 }
+
+/**
+ * Printing the help message
+ */
+export async function printHelp() {
+    console.log(chalk.magenta('In order to deploy a version, run the following command:'))
+    console.log(chalk.white('deploy-pkg <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
+    console.log(chalk.white('for help, run deploy-pkg --help'))
+    console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+}
