@@ -5,8 +5,8 @@ const child_process = require('child_process');
 const packageManagers = core.getInput('package_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
-const pkgRegistry = core.getInput('pkg_registry');
-const pkgScope = core.getInput('pkg_scope')
+const npmRegistry = core.getInput('npm_registry');
+const npmScope = core.getInput('npm_scope')
 const dryRun = core.getInput('dry_run')
 const prettyPrint = core.getInput('pretty_print')
 const debug = core.getInput('debug');
@@ -22,9 +22,9 @@ let pkgName = core.getInput('pkg_name');
  */
 async function configureNPM(token, registry) {
     await execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
-    if(pkgScope !== '') {
-        pkgName = `@${pkgScope}/${pkgName}`
-        await execute(`echo "@${pkgScope}:registry=https://${registry}/${pkgScope}" >> ".npmrc"`);
+    if(npmScope !== '') {
+        pkgName = `@${npmScope}/${pkgName}`
+        await execute(`echo "@${npmScope}:registry=https://${registry}/${npmScope}" >> ".npmrc"`);
     }
     await execute(`echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
 }
@@ -102,10 +102,10 @@ async function getUpgradeVersion(pkgName, cliArguments) {
  */
 function getCliArguments() {
     let args = '';
-    if(pkgRegistry && pkgRegistry !== 'registry.npmjs.org')
-        args+= ` --registry=https://${pkgRegistry}`;
-    if(pkgScope && pkgScope !== '')
-        args+= ` --scope=@${pkgScope}`;
+    if(npmRegistry && npmRegistry !== 'registry.npmjs.org')
+        args+= ` --registry=https://${npmRegistry}`;
+    if(npmScope && npmScope !== '')
+        args+= ` --scope=@${npmScope}`;
     if(dryRun === 'true' || dryRun === true)
         args+= ` --dry-run`;
     return args;
@@ -187,7 +187,7 @@ async function deploy() {
     verifyInputs();
     //Configuration section
     if(isNPM)
-        await configureNPM(npmAccessToken, pkgRegistry);
+        await configureNPM(npmAccessToken, npmRegistry);
     await configureGitHub(pkgName)
 
     //NPM Package deployment section

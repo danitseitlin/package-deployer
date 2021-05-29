@@ -1,27 +1,27 @@
 name: 'package-deploy-bot'
-description: 'A Github Action for deploying NPM packages'
+description: 'GitHub Action to release packages in multiple methods'
 author: 'Dani Tseitlin'
 inputs:
   pkg_name:
-    description: The name of the NPM package.
+    description: The name of the package to relase. i.e. my-pkg
     required: true
-  pkg_registry:
-    description: The registry of the package.
-    default: registry.npmjs.org
-    required: false
   package_managers:
       description: A list of deployment apps. i.e. [npm, github]. Available options are npm, github.
       default: '[github]'
       required: true
   github_access_token:
-    description: GitHub Access token for authentication. When passed, a release version is released.
+    description: GitHub Access token for authentication. Required when 'github' is passed to package_managers.
+    required: false
+  npm_scope:
+    description: The scope of the NPM package.
+    required: false
+  npm_registry:
+    description: The registry of the NPM package. i.e. registry.npmjs.org
+    default: registry.npmjs.org
     required: false
   npm_access_token:
-    description: NPM Access token for authentication.
+    description: NPM Access token for authentication. Required when 'npm' is passed to package_managers.
     required: true
-  pkg_scope:
-    description: The scope of the package.
-    required: false
   dry_run:
     description: If to run the deployment in --dry-run mode. Usually used for Inner Testing.
     default: false
