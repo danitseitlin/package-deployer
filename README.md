@@ -27,7 +27,18 @@
 ## :zap: Quick Start
 Run `npm install npm-package-deployer`
 ## :clap: Basic usage
-Run `deploy-pkg <package name>` to deploy an automatic version locally
+Run `deploy-pkg <package name>` to deploy an automatic version locally. Here are available flags:
+| CLI argument | Explanation |
+|---------------------- |------------------------------------------------------------------ |
+| --npm-access-token    | The NPM access token. Required for NPM package deployments.       |
+| --npm-registry        | The NPM registry. Default: registry.npmjs.org                     |
+| --npm-scope           | The NPM scope. The scope of the NPM package. Default: ''          |
+| --github-access-token | The GitHub access token. Required for GitHub release deployments. |
+| --github-owner        | The GitHub owner. Required for GitHub release deployments.        |
+| --github-repo         | The GitHub repo. Required for GitHub release deployments.         |
+| --pretty-print        | Printing data in a more "readable" format                         |
+| --debug               | If to print debug logs                                            |
+| --dry-run             | If to release packages in a dry run                               |
 
 ## :fire: Integrate with GitHub actions
 You can integrate this package with a GitHub action workflow (A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)):
