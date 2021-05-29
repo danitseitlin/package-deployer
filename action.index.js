@@ -53,6 +53,10 @@ async function releaseGitHubVersion(version, branch, draft, preRelease) {
         await execute(`curl -H 'Authorization: token ${githubAccessToken}' --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`)
 }
 
+async function getGitHubVersions() {
+    return JSON.parse(await execute(`curl https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases`))
+}
+
 /**
  * Executing a shell command
  * @param command The command
@@ -216,6 +220,7 @@ async function deploy() {
     //GitHub Release section
     if(isGitHub) {
         //version, branch, draft, preRelease
+        const updateVersion = await getGitHubVersions()[0].tag_name;
         await releaseGitHubVersion(updateVersion, 'master', false, false);
     }
 }
