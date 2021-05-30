@@ -558,7 +558,7 @@ exports.debug = debug; // for test
 
 const deployment = __webpack_require__(294)
 const github = __webpack_require__(469);
-
+const utils = __webpack_require__(543)
 const core = __webpack_require__(470);
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
@@ -592,9 +592,9 @@ async function verifyInputs(data) {
     try {
         const data = {
             pkgName: pkgName,
-            debug: debug === undefined || debug === '' ? false: debug,
-            prettyPrint: prettyPrint === undefined || prettyPrint === '' ? false: prettyPrint,
-            dryRun: dryRun === undefined || dryRun === '' ? false: dryRun
+            debug: utils.stringToBoolean(debug),
+            prettyPrint: utils.stringToBoolean(prettyPrint),
+            dryRun: utils.stringToBoolean(dryRun)
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
@@ -4400,6 +4400,7 @@ exports.HttpClient = HttpClient;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "execute", function() { return execute; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringToBoolean", function() { return stringToBoolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printHelp", function() { return printHelp; });
 const child_process = __webpack_require__(129);
 
@@ -4417,6 +4418,15 @@ async function execute(command, isDebug = false) {
         	done({ stdout, stderr })
         })
     })
+}
+
+/**
+ * Converting string value to boolean
+ * @param {*} value The value given to convert to boolean
+ * @returns A boolean
+ */
+async function stringToBoolean(value) {
+    return (value === 'false' || value === undefined) ? false: true;
 }
 
 /**

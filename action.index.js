@@ -1,6 +1,6 @@
 const deployment = require('./src/deployment')
 const github = require('@actions/github');
-
+const utils = require('./src/utils')
 const core = require('@actions/core');
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
@@ -34,9 +34,9 @@ async function verifyInputs(data) {
     try {
         const data = {
             pkgName: pkgName,
-            debug: debug === undefined || debug === '' ? false: debug,
-            prettyPrint: prettyPrint === undefined || prettyPrint === '' ? false: prettyPrint,
-            dryRun: dryRun === undefined || dryRun === '' ? false: dryRun
+            debug: utils.stringToBoolean(debug),
+            prettyPrint: utils.stringToBoolean(prettyPrint),
+            dryRun: utils.stringToBoolean(dryRun)
         }
         data.npm = isNPM ? {
             token: npmAccessToken,

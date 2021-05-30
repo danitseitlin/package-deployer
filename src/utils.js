@@ -17,6 +17,15 @@ export async function execute(command, isDebug = false) {
 }
 
 /**
+ * Converting string value to boolean
+ * @param {*} value The value given to convert to boolean
+ * @returns A boolean
+ */
+export async function stringToBoolean(value) {
+    return (value === 'false' || value === undefined) ? false: true;
+}
+
+/**
  * Printing the help message
  */
 export async function printHelp() {
