@@ -27,13 +27,53 @@
 ## :zap: Quick Start
 Run `npm install npm-package-deployer`
 ## :clap: Basic usage
-Run `npm-deploy <package name>` to deploy an automatic version locally
+Run `deploy-pkg <package name>` to deploy an automatic version locally. Here are available flags:
+
+| CLI argument          | Explanation                                                       |
+|---------------------- |------------------------------------------------------------------ |
+| --npm-access-token    | The NPM access token. Required for NPM package deployments.       |
+| --npm-registry        | The NPM registry. Default: registry.npmjs.org                     |
+| --npm-scope           | The NPM scope. The scope of the NPM package. Default: ''          |
+| --github-access-token | The GitHub access token. Required for GitHub release deployments. |
+| --github-owner        | The GitHub owner. Required for GitHub release deployments.        |
+| --github-repo         | The GitHub repo. Required for GitHub release deployments.         |
+| --pretty-print        | Printing data in a more "readable" format                         |
+| --debug               | If to print debug logs                                            |
+| --dry-run             | If to release packages in a dry run                               |
 
 ## :fire: Integrate with GitHub actions
-You can integrate this package with a GitHub action workflow (A full example can be seen [here](https://github.com/danitseitlin/dmock-server/blob/master/.github/workflows/auto-deployer.yml)):
-1. Setup your git configuration
-2. Create an .npmrc file with the NPM auth token
-3. Add deploy script in your package.json for `npm-deploy <package name>`
-4. Run deploy script
+You can integrate with a GitHub action workflow using the 'package-deploy-bot' GitHub action:
+```
+deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setting up the environment
+      run: npm install
+    - name: Deploying version
+      uses: ./
+      with:
+        pkg_name: npm-package-deployer
+        pkg_managers: '[github, npm]'
+        npm_registry: registry.npmjs.org
+        npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
+        github_access_token: ${{secrets.G_AUTH_TOKEN}}
+        dry_run: true
+        debug: true
+```
+
+| Parameters          | Explanation                                                                             |
+|-------------------- |---------------------------------------------------------------------------------------- |
+| package_managers    | A list of package deployments. i.e. '[github, npm]'. Available options are github, npm. |
+| pkg_name            | The name of the package.                                                                |
+| npm_access_token    | The NPM access token. Required for NPM package deployments.                             |
+| npm_registry        | The NPM registry. Default: registry.npmjs.org                                           |
+| npm_scope           | The NPM scope. The scope of the NPM package. Default: ''                                |
+| github_access_token | The GitHub access token. Required for GitHub release deployments.                       |
+| github_owner        | The GitHub owner. Required for GitHub release deployments.                              |
+| github_repo         | The GitHub repo. Required for GitHub release deployments.                               |
+| pretty_print        | Printing data in a more "readable" format                                               |
+| debug               | If to print debug logs                                                                  |
+| dry_run             | If to release packages in a dry run                                                     |
 
 <p align='center'><img src='.github/resources/deploybot.gif'/></p>

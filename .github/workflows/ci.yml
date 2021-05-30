@@ -6,29 +6,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Configuration GIT name
-      run: git config --global user.name ${{secrets.BOT_NAME}}
-    - name: Configuration GIT email
-      run: git config --global user.email ${{secrets.BOT_EMAIL}}
-    - name: Creating .npmrc file
-      run: echo "registry=https://registry.npmjs.org/" >> ~/.npmrc && echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" >> ~/.npmrc
+    - name: Setting up the environment
+      run: npm install && npm run pkg-build && sudo npm link
+    - name: Deploying version
+      run: sudo deploy-pkg npm-package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=npm-package-deployer --dry-run --publish-pretty-output --debug
       env:
         NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-    - name: Setting up the environment
-      run: npm install && npm run build && sudo npm link
-    - name: Deploying version
-      run: sudo npm-deploy npm-package-deployer --dry-run --publish-pretty-output
   action_deployment:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Setting up the environment
-      run: npm install && npm run build && sudo npm link
+      run: npm install
     - name: Deploying version
       uses: ./
       with:
         pkg_name: npm-package-deployer
-        pkg_registry: registry.npmjs.org
+        pkg_managers: '[github, npm]'
+        npm_registry: registry.npmjs.org
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         github_access_token: ${{secrets.G_AUTH_TOKEN}}
         dry_run: true

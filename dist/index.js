@@ -42,6 +42,8 @@ module.exports =
 /******/ 		// Load entry module and return exports
 /******/ 		return __webpack_require__(191);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -554,210 +556,66 @@ exports.debug = debug; // for test
 /***/ 191:
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const core = __webpack_require__(470);
+const deployment = __webpack_require__(294)
 const github = __webpack_require__(469);
-const child_process = __webpack_require__(129);
-
+const utils = __webpack_require__(543)
+const core = __webpack_require__(470);
+const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
-let pkgName = core.getInput('pkg_name');
-const pkgRegistry = core.getInput('pkg_registry');
-const pkgScope = core.getInput('pkg_scope')
+const npmRegistry = core.getInput('npm_registry');
+const npmScope = core.getInput('npm_scope')
 const dryRun = core.getInput('dry_run')
 const prettyPrint = core.getInput('pretty_print')
 const debug = core.getInput('debug');
+const isNPM = packageManagers.indexOf('npm') !== -1;
+const isGitHub = packageManagers.indexOf('github') !== -1;
+let pkgName = core.getInput('pkg_name');
 
 /**
- * Configurating NPM
- * @param {*} token The NPM auth token
- * @param {*} registry The NPM registry
+ * Verifying GitHub action inputs
+ * @param {*} data The data to verify to inputs of
  */
-async function configureNPM(token, registry) {
-    await execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
-    if(pkgScope !== '') {
-        pkgName = `@${pkgScope}/${pkgName}`
-        await execute(`echo "@${pkgScope}:registry=https://${registry}/${pkgScope}" >> ".npmrc"`);
+async function verifyInputs(data) {
+    if(!data.pkgName || data.pkgName === '')
+        throw new Error('Missing input "pkg_name"');
+    if(data.npm){
+        if(!data.npm.token || data.npm.token === '')
+            throw new Error('Mising input "npm_access_token"');
     }
-    await execute(`echo "//${registry}/:_authToken=${token}" >> ".npmrc"`);
-}
-
-/**
- * Configurating GitHub
- * @param {*} pkgName The name of the pkg
- */
-async function configureGitHub(pkgName) {
-    await execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
-}
-
-/**
- * Releasing a new GitHub release
- * @param {*} version The release version
- * @param {*} branch The branch to release from
- * @param {*} draft If the release is a draft
- * @param {*} preRelease If the release is a pre-release
- */
-async function releaseGitHubVersion(version, branch, draft, preRelease) {
-    const tagName = `v${version}`;
-    const body = `Release of v${version}`;
-    await execute(`curl --data '{"tag_name": "${tagName}","target_commitish": "${branch}","name": "${tagName}","body": "${body}","draft": ${draft},"prerelease": ${preRelease}' https://api.github.com/repos/${github.context.repo.owner}/${github.context.repo.repo}/releases?access_token=${githubAccessToken}`)
-}
-
-/**
- * Executing a shell command
- * @param command The command
- */
- async function execute(command) {
-    return new Promise((done, failed) => {
-        child_process.exec(command, (error, stdout, stderr) => {
-            if (error !== null) failed(error)
-            if(debug === 'true' || debug === true)
-                console.log({ command, stdout, stderr })
-        	done({ stdout, stderr })
-        })
-    })
-}
-
-/**
- * Retrieving the current version of the package
- * @param cliArguments The additional cli arguments
- */
- async function getCurrentVersion(pkgName) {
-    const stdout = (await execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
-    const split = stdout.split('.');
-	return {
-		major: parseInt(split[0]),
-		minor: parseInt(split[split.length-2]),
-		patch: parseInt(split[split.length-1])
-	}
-}
-
-/**
- * Retrieving the version of the current package
- * @param cliArguments The additional CLI arguments
- */
-async function getUpgradeVersion(pkgName, cliArguments) {
-    if(await doesPackageExist(pkgName, cliArguments)) {
-	    const version = await getCurrentVersion(pkgName);
-	    if(version.patch < 9) version.patch++;
-	    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
-	    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
-        return `${version.major}.${version.minor}.${version.patch}`
-    }
-    return '0.0.1';
-}
-
-/***
- * Retrieving the args for the CLI commands
- */
-function getCliArguments() {
-    let args = '';
-    if(pkgRegistry && pkgRegistry !== 'registry.npmjs.org')
-        args+= ` --registry=https://${pkgRegistry}`;
-    if(pkgScope && pkgScope !== '')
-        args+= ` --scope=@${pkgScope}`;
-    if(dryRun === 'true' || dryRun === true)
-        args+= ` --dry-run`;
-    return args;
-}
-
-/**
- * Checking if the pacakge exists in the relevant NPM registry
- * @param cliArguments The additional CLI arguments
- */
-async function doesPackageExist(pkgName, cliArguments) {
-    const arrayArguments = cliArguments.split(' ')
-    const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
-    const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
-
-    if(!isScopedRegistry && !isScope) {
-        const response = await execute(`npm search ${pkgName}${cliArguments}`);
-        return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
-    }
-    else {
-        console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')
-        return true;
-    }
-}
-
-/**
- * Parsing the publish output to a more pretified version
- * @param output The publish output
- */
-function parseDeployment(output) {
-    const split = output.stderr.split('\n');
-    const name = split.find(item => item.includes('name'))
-    const version = split.find(item => item.includes('version'))
-    const size = split.find(item => item.includes('package size'))
-    const unpackedSize = split.find(item => item.includes('unpacked size'))
-    const shasum = split.find(item => item.includes('shasum'))
-    const integrity = split.find(item => item.includes('integrity'))
-    const totalFiles = split.find(item => item.includes('total files'))
-    const files = []
-    const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
-    const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
-    //Parsing only the files
-    for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
-        files.push(split[i].split('B ')[1].replace(/ /g, '').replace('\n', ''));
-    }
-    //Building and returning the rest of the JS object
-    return {
-        files: files,
-        name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
-        version: (version !== undefined) ? version.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
-        size: (size !== undefined) ? size.replace(/  /g, '').split(':')[1]: null,
-        unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
-        shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
-        integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
-        totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
-    }
-}
-
-/**
- * Deploying pkg version
- */
-async function deploy() {
-    //Configuration section
-    await configureNPM(npmAccessToken, pkgRegistry);
-    await configureGitHub(pkgName)
-
-    //NPM Package deployment section
-    const cliArguments = getCliArguments();
-    await execute(`echo "args: ${cliArguments}"`)
-    const version = await getCurrentVersion(pkgName)
-    await execute(`echo "current ver: ${JSON.stringify(version)}"`)
-    const updateVersion = await getUpgradeVersion(pkgName, cliArguments);
-    await execute(`echo "new ver: ${updateVersion}"`)
-    console.log(`Upgrading ${pkgName}@${version.major}.${version.minor}.${version.patch} to version ${pkgName}@${updateVersion}`)
-    await execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`);
-    const publish = await execute(`npm publish${cliArguments}`);
-    console.log('==== Publish Output ====')
-    if(prettyPrint === 'true' || prettyPrint === true) {
-        const prettyPublish = parseDeployment(publish);
-        const { files, ...rest } = prettyPublish
-        for(const item in rest) {
-            console.log(`${item}: ${rest[item].toString()}`)
-        }
-        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
-        console.log('========================')
-    }
-    else
-        console.log(publish)
-
-    //GitHub Release section
-    if(githubAccessToken && githubAccessToken != "") {
-        //version, branch, draft, preRelease
-        await releaseGitHubVersion(updateVersion, 'master', false, false);
+    if(data.github){
+        if(!data.github.token || data.github.token === '')
+            throw new Error('Mising input "github_access_token"');
     }
 }
 
 (async () => {
     try {
-        await deploy()
+        const data = {
+            pkgName: pkgName,
+            debug: utils.stringToBoolean(debug),
+            prettyPrint: utils.stringToBoolean(prettyPrint),
+            dryRun: utils.stringToBoolean(dryRun)
+        }
+        data.npm = isNPM ? {
+            token: npmAccessToken,
+            registry: npmRegistry,
+            scope: npmScope
+        }: undefined;
+        data.github = isGitHub ? {
+            owner: github.context.repo.owner,
+            repo: github.context.repo.repo,
+            token: githubAccessToken
+        }: undefined;
+        //Verifying inputs
+        verifyInputs(data);
+        await deployment.deploy(data);
     }
     catch(e) {
         core.setFailed(e.toString());
     }
 })();
+
 
 /***/ }),
 
@@ -856,6 +714,74 @@ function register(state, name, method, options) {
   });
 }
 
+
+/***/ }),
+
+/***/ 294:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deploy", function() { return deploy; });
+const utils = __webpack_require__(543);
+const github = __webpack_require__(790);
+const npm = __webpack_require__(625);
+
+/**
+ * Deploying pkg version
+ * @param {*} data The data passed to the deployment
+ */
+async function deploy(data) {
+    //Configuration section
+    await github.configureGitHub(data.pkgName)
+    if(data.npm) {
+        await npm.configureNPM({
+            pkgName: data.pkgName,
+            token: data.npm.token,
+            registry: data.npm.registry,
+            scope: data.npm.scope
+        });
+        //NPM Package deployment section
+        const cliArguments = npm.getCliArguments(data);
+        await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
+        const currentVersion = await npm.getCurrentVersion(data.pkgName)
+        await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
+        const updateVersion = await npm.getUpgradeVersion(data.pkgName, cliArguments);
+        await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
+        console.log(`Upgrading ${data.pkgName}@${currentVersion} to version ${data.pkgName}@${updateVersion}`)
+        await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
+        const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
+        console.log('==== Publish Output ====')
+        if(data.prettyPrint === 'true' || data.prettyPrint === true) {
+            const prettyPublish = npm.parseDeployment(publish);
+            const { files, ...rest } = prettyPublish
+            for(const item in rest) {
+                console.log(`${item}: ${rest[item].toString()}`)
+            }
+            console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+            console.log('========================')
+        }
+        else
+            console.log(publish)
+    }
+    //GitHub Release section
+    if(data.github) {
+        //version, branch, draft, preRelease
+        const currentVersion = (await github.getGitHubVersions(data.github))[0].tag_name.replace('v', '');
+        const updateVersion = npm.getNextVersion(currentVersion);
+        await github.releaseGitHubVersion({
+            owner: data.github.owner,
+            repo: data.github.repo,
+            token: data.github.token,
+            version: updateVersion,
+            branch: 'master',
+            draft: false,
+            preRelease: false,
+            debug: data.debug,
+            dryRun: data.dryRun
+        })
+    }
+}
 
 /***/ }),
 
@@ -4468,6 +4394,56 @@ exports.HttpClient = HttpClient;
 
 /***/ }),
 
+/***/ 543:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "execute", function() { return execute; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringToBoolean", function() { return stringToBoolean; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printHelp", function() { return printHelp; });
+const child_process = __webpack_require__(129);
+
+/**
+ * Executing a shell command
+ * @param {*} command The command
+ * @param {*} isDebug If to print extra debug logs. Default: false
+ */
+async function execute(command, isDebug = false) {
+    return new Promise((done, failed) => {
+        child_process.exec(command, (error, stdout, stderr) => {
+            if (error !== null) failed(error)
+            if(isDebug === 'true' || isDebug === true)
+                console.log({ command, stdout, stderr })
+            done({ stdout, stderr })
+        })
+    })
+}
+
+/**
+ * Converting string value to boolean
+ * @param {*} value The value given to convert to boolean
+ * @returns A boolean
+ */
+function stringToBoolean(value) {
+    return (value === 'false' || value === undefined) ? false: true;
+}
+
+/**
+ * Printing the help message
+ */
+async function printHelp() {
+    console.log(chalk.magenta('In order to deploy a version, run the following command:'))
+    console.log(chalk.white('deploy-pkg <packageName> <optional additional cli args>'))
+    console.log(chalk.white('additional parameters:'))
+    console.log(chalk.white('--publish-original-output | Printing the original publish output'))
+    console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
+    console.log(chalk.white('for help, run deploy-pkg --help'))
+    console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+}
+
+/***/ }),
+
 /***/ 605:
 /***/ (function(module) {
 
@@ -4486,6 +4462,142 @@ module.exports = require("events");
 /***/ (function(module) {
 
 module.exports = require("path");
+
+/***/ }),
+
+/***/ 625:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureNPM", function() { return configureNPM; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentVersion", function() { return getCurrentVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUpgradeVersion", function() { return getUpgradeVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextVersion", function() { return getNextVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCliArguments", function() { return getCliArguments; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doesPackageExist", function() { return doesPackageExist; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseDeployment", function() { return parseDeployment; });
+const utils = __webpack_require__(543)
+
+/**
+ * Configurating NPM
+ * @param {*} data The data of the NPM
+ */
+async function configureNPM(data) {
+    await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
+    if(data.scope !== '') {
+        pkgName = `@${data.scope}/${data.pkgName}`
+        await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
+    }
+    await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> ".npmrc"`);
+}
+
+/**
+ * Retrieving the current version of the package
+ * @param {*} pkgName The name of the package
+ */
+async function getCurrentVersion(pkgName) {
+    return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
+}
+
+/**
+ * Retrieving the version of the current package
+ * @param {*} pkgName The name of the package
+ * @param {*} cliArguments The additional CLI arguments
+ */
+async function getUpgradeVersion(pkgName, cliArguments) {
+    if(await doesPackageExist(pkgName, cliArguments)) {
+        const version = getNextVersion(await getCurrentVersion(pkgName));
+        return version;
+    }
+    return '0.0.1';
+}
+
+/**
+ * Retrieve the next version
+ * @param {*} currentVersion The current version to upgrade from 
+ * @returns The next version of a release
+ */
+function getNextVersion(currentVersion) {
+    const split = currentVersion.split('.');
+    const version = {
+        major: parseInt(split[0]),
+        minor: parseInt(split[split.length-2]),
+        patch: parseInt(split[split.length-1])
+    }
+    if(version.patch < 9) version.patch++;
+    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
+    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
+    return `${version.major}.${version.minor}.${version.patch}`
+}
+
+/***
+ * Retrieving the args for the CLI commands
+ * @param {*} data The given data of the deployment
+ */
+function getCliArguments(data) {
+    let args = '';
+    if(data.npm.registry && data.npm.registry !== 'registry.npmjs.org')
+        args += ` --registry=https://${data.npm.registry}`;
+    if(data.npm.scope && data.npm.scope !== '')
+        args += ` --scope=@${data.npm.scope}`;
+    if(data.dryRun === 'true' || data.dryRun === true)
+        args += ` --dry-run`;
+    return args;
+}
+
+/**
+ * Checking if the pacakge exists in the relevant NPM registry
+ * @param {*} pkgName The name of the package
+ * @param {*} cliArguments The additional CLI arguments
+ */
+async function doesPackageExist(pkgName, cliArguments) {
+    const arrayArguments = cliArguments.split(' ')
+    const isScopedRegistry = arrayArguments.findIndex((item) => item.includes('--registry') && !item.includes('registry.npmjs.org')) !== -1;
+    const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
+
+    if(!isScopedRegistry && !isScope) {
+        const response = await utils.execute(`npm search ${pkgName}${cliArguments}`);
+        return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
+    }
+    else {
+        console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')
+        return true;
+    }
+}
+
+/**
+ * Parsing the publish output to a more pretified version
+ * @param output The publish output
+ */
+function parseDeployment(output) {
+    const split = output.stderr.split('\n');
+    const name = split.find(item => item.includes('name'))
+    const version = split.find(item => item.includes('version'))
+    const size = split.find(item => item.includes('package size'))
+    const unpackedSize = split.find(item => item.includes('unpacked size'))
+    const shasum = split.find(item => item.includes('shasum'))
+    const integrity = split.find(item => item.includes('integrity'))
+    const totalFiles = split.find(item => item.includes('total files'))
+    const files = []
+    const filesStartIndex = split.findIndex(item => item.includes('Tarball Contents'))
+    const filesEndIndex = split.findIndex(item => item.includes('Tarball Details'))
+    //Parsing only the files
+    for(let i = filesStartIndex+1; i < filesEndIndex; i++) {
+        files.push(split[i].split('B ')[1].replace(/ /g, '').replace('\n', ''));
+    }
+    //Building and returning the rest of the JS object
+    return {
+        files: files,
+        name: (name !== undefined) ? name.replace(/  /g, '').split(':')[1]: null,
+        version: (version !== undefined) ? version.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
+        size: (size !== undefined) ? size.replace(/  /g, '').split(':')[1]: null,
+        unpackedSize: (unpackedSize !== undefined) ? unpackedSize.replace(/  /g, '').split(': ')[1].replace(/ /g, ''): null,
+        shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
+        integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
+        totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
+    }
+}
 
 /***/ }),
 
@@ -4698,6 +4810,51 @@ exports.request = request;
 /***/ (function(module) {
 
 module.exports = require("zlib");
+
+/***/ }),
+
+/***/ 790:
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureGitHub", function() { return configureGitHub; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "releaseGitHubVersion", function() { return releaseGitHubVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
+const utils = __webpack_require__(543);
+
+/**
+ * Configurating GitHub
+ * @param {*} pkgName The name of the pkg
+ */
+async function configureGitHub(pkgName) {
+    await utils.execute(`git config --global user.name "Deploy BOT" && git config --global user.email "bot@${pkgName}.com"`)
+}
+
+/**
+ * Releasing a new GitHub release
+ * @param {*} data The data of the GitHub release
+ */
+async function releaseGitHubVersion(data) {
+    const tagName = `v${data.version}`;
+    const body = `Release of ${tagName}`;
+    console.log(`Releasing GitHub version ${tagName}`)
+    if(!data.dryRun) {
+        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
+        if(res.stdout === '')
+            throw new Error(res.stderr)
+    }
+}
+
+/**
+ * Retrieving all the GitHub versions
+ * @param {*} data The data of GitHub
+ * @returns An array object of the GitHub releases
+ */
+async function getGitHubVersions(data) {
+    const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
+    return JSON.parse(res)
+}
 
 /***/ }),
 
@@ -6191,4 +6348,31 @@ exports.checkBypass = checkBypass;
 
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ }
+);

@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "description": "A useful tool to deploy an NPM version via CLI",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "pre-deploy": "npm run build && npm run clean",
-    "deploy": "npm-deploy npm-package-deployer",
-    "clean": "rmdir lib /s/q",
-    "action-build": "ncc build action.index.js && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\""
+    "deploy": "deploy-pkg npm-package-deployer",
+    "clean": "rmdir lib /s/q && rmdir dist /s/q",
+    "action-build": "ncc build action.index.js -o dist && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
+    "pkg-build": "ncc build npm.index.js -o lib",
+    "build-and-commit": "git add . && rmdir dist /s/q && npm run action-build && git push origin HEAD"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,7 @@
     "node": "^16.0.0"
   },
   "bin": {
-    "npm-deploy": "./bin/node ../../../lib/index.js"
+    "deploy-pkg": "./bin/node ../../../lib/index.js"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
