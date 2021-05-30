@@ -16,6 +16,7 @@ export async function configureGitHub(pkgName) {
  * @param {*} preRelease If the release is a pre-release
  */
 export async function releaseGitHubVersion(data) {
+    console.log(data)
     const tagName = `v${data.version}`;
     const body = `Release of v${tagName}`;
     if(data.debug)
