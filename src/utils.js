@@ -21,7 +21,7 @@ export async function execute(command, isDebug = false) {
  * @param {*} value The value given to convert to boolean
  * @returns A boolean
  */
-export async function stringToBoolean(value) {
+export function stringToBoolean(value) {
     return (value === 'false' || value === undefined) ? false: true;
 }
 

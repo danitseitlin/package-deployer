@@ -4425,7 +4425,7 @@ async function execute(command, isDebug = false) {
  * @param {*} value The value given to convert to boolean
  * @returns A boolean
  */
-async function stringToBoolean(value) {
+function stringToBoolean(value) {
     return (value === 'false' || value === undefined) ? false: true;
 }
 
