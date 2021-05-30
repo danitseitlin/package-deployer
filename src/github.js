@@ -1,3 +1,5 @@
+import { stderr } from 'chalk';
+
 const utils = require('./utils');
 
 /**
@@ -16,13 +18,15 @@ export async function configureGitHub(pkgName) {
  * @param {*} preRelease If the release is a pre-release
  */
 export async function releaseGitHubVersion(data) {
-    console.log(data)
     const tagName = `v${data.version}`;
     const body = `Release of v${tagName}`;
-    if(data.debug)
-        console.log(`Releasing GitHub version ${tagName}`)
-    if(!data.dryRun)
-        await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
+    console.log(`Releasing GitHub version ${tagName}`)
+    if(!data.dryRun) {
+        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
+        console.log(res)
+        if(res.stderr !== '')
+            throw new Error(res.stderr)
+    }
 }
 
 /**
