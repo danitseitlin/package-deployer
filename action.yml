@@ -7,7 +7,7 @@ inputs:
     required: true
   pkg_managers:
       description: A list of deployment apps. i.e. [npm, github]. Available options are npm, github.
-      default: '[github]'
+      default: '[github, npm]'
       required: true
   github_access_token:
     description: GitHub Access token for authentication. Required when 'github' is passed to pkg_managers.
