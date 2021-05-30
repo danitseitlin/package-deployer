@@ -592,9 +592,9 @@ async function verifyInputs(data) {
     try {
         const data = {
             pkgName: pkgName,
-            debug: debug,
-            prettyPrint: prettyPrint,
-            dryRun: dryRun
+            debug: debug === undefined || debug === '' ? false: debug,
+            prettyPrint: prettyPrint === undefined || prettyPrint === '' ? false: prettyPrint,
+            dryRun: dryRun === undefined || dryRun === '' ? false: dryRun
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
