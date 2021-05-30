@@ -4415,7 +4415,7 @@ async function execute(command, isDebug = false) {
             if (error !== null) failed(error)
             if(isDebug === 'true' || isDebug === true)
                 console.log({ command, stdout, stderr })
-        	done({ stdout, stderr })
+            done({ stdout, stderr })
         })
     })
 }
@@ -4507,7 +4507,7 @@ async function getCurrentVersion(pkgName) {
  */
 async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
-	    const version = getNextVersion(await getCurrentVersion(pkgName));
+        const version = getNextVersion(await getCurrentVersion(pkgName));
         return version;
     }
     return '0.0.1';
@@ -4520,14 +4520,14 @@ async function getUpgradeVersion(pkgName, cliArguments) {
  */
 function getNextVersion(currentVersion) {
     const split = currentVersion.split('.');
-	const version = {
-		major: parseInt(split[0]),
-		minor: parseInt(split[split.length-2]),
-		patch: parseInt(split[split.length-1])
-	}
+    const version = {
+        major: parseInt(split[0]),
+        minor: parseInt(split[split.length-2]),
+        patch: parseInt(split[split.length-1])
+    }
     if(version.patch < 9) version.patch++;
-	else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
-	else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
+    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
+    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
     return `${version.major}.${version.minor}.${version.patch}`
 }
 

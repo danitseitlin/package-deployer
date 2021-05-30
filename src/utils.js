@@ -11,7 +11,7 @@ export async function execute(command, isDebug = false) {
             if (error !== null) failed(error)
             if(isDebug === 'true' || isDebug === true)
                 console.log({ command, stdout, stderr })
-        	done({ stdout, stderr })
+            done({ stdout, stderr })
         })
     })
 }
