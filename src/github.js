@@ -30,6 +30,5 @@ export async function releaseGitHubVersion(data) {
  */
 export async function getGitHubVersions(data) {
     const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
-    console.log(res)
     return JSON.parse(res)
 }
