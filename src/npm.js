@@ -2,8 +2,7 @@ const utils = require('./utils')
 
 /**
  * Configurating NPM
- * @param {*} token The NPM auth token
- * @param {*} registry The NPM registry
+ * @param {*} data The data of the NPM
  */
 export async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
@@ -16,7 +15,7 @@ export async function configureNPM(data) {
 
 /**
  * Retrieving the current version of the package
- * @param cliArguments The additional cli arguments
+ * @param {*} pkgName The name of the package
  */
 export async function getCurrentVersion(pkgName) {
     return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
@@ -24,7 +23,8 @@ export async function getCurrentVersion(pkgName) {
 
 /**
  * Retrieving the version of the current package
- * @param cliArguments The additional CLI arguments
+ * @param {*} pkgName The name of the package
+ * @param {*} cliArguments The additional CLI arguments
  */
 export async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
@@ -54,6 +54,7 @@ export function getNextVersion(currentVersion) {
 
 /***
  * Retrieving the args for the CLI commands
+ * @param {*} data The given data of the deployment
  */
 export function getCliArguments(data) {
     let args = '';
@@ -68,7 +69,8 @@ export function getCliArguments(data) {
 
 /**
  * Checking if the pacakge exists in the relevant NPM registry
- * @param cliArguments The additional CLI arguments
+ * @param {*} pkgName The name of the package
+ * @param {*} cliArguments The additional CLI arguments
  */
 export async function doesPackageExist(pkgName, cliArguments) {
     const arrayArguments = cliArguments.split(' ')

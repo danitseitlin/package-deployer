@@ -2,8 +2,8 @@ const child_process = require('child_process');
 
 /**
  * Executing a shell command
- * @param command The command
- * @param isDebug If to print extra debug logs. Default: false
+ * @param {*} command The command
+ * @param {*} isDebug If to print extra debug logs. Default: false
  */
 export async function execute(command, isDebug = false) {
     return new Promise((done, failed) => {

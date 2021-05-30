@@ -5,6 +5,7 @@ const deployment = require('./src/deployment')
 
 /**
  * Verifying GitHub action inputs
+ * @param {*} data The data to verify the inputs of
  */
  async function verifyInputs(data) {
     if(!data.pkgName || data.pkgName === '')

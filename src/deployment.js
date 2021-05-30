@@ -4,12 +4,12 @@ const npm = require('./npm');
 
 /**
  * Deploying pkg version
+ * @param {*} data The data passed to the deployment
  */
 export async function deploy(data) {
     //Configuration section
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
-        ///await npm.configureNPM(data.npm.token, data.npm.registry);
         await npm.configureNPM({
             pkgName: data.pkgName,
             token: data.npm.token,
@@ -44,7 +44,6 @@ export async function deploy(data) {
         //version, branch, draft, preRelease
         const currentVersion = (await github.getGitHubVersions(data.github))[0].tag_name.replace('v', '');
         const updateVersion = npm.getNextVersion(currentVersion);
-        //await github.releaseGitHubVersion(updateVersion, 'master', false, false); //version, branch, draft, preRelease, debug, dryRun
         await github.releaseGitHubVersion({
             owner: data.github.owner,
             repo: data.github.repo,

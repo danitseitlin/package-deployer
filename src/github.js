@@ -1,5 +1,3 @@
-import { stderr } from 'chalk';
-
 const utils = require('./utils');
 
 /**
@@ -12,10 +10,7 @@ export async function configureGitHub(pkgName) {
 
 /**
  * Releasing a new GitHub release
- * @param {*} tagName The release version
- * @param {*} branch The branch to release from
- * @param {*} draft If the release is a draft
- * @param {*} preRelease If the release is a pre-release
+ * @param {*} data The data of the GitHub release
  */
 export async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
@@ -30,6 +25,7 @@ export async function releaseGitHubVersion(data) {
 
 /**
  * Retrieving all the GitHub versions
+ * @param {*} data The data of GitHub
  * @returns An array object of the GitHub releases
  */
 export async function getGitHubVersions(data) {

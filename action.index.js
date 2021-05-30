@@ -16,6 +16,7 @@ let pkgName = core.getInput('pkg_name');
 
 /**
  * Verifying GitHub action inputs
+ * @param {*} data The data to verify to inputs of
  */
 async function verifyInputs(data) {
     if(!data.pkgName || data.pkgName === '')
