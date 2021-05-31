@@ -750,9 +750,9 @@ async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(pkgName)
+        const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = await npm.getUpgradeVersion(pkgName, cliArguments);
+        const updateVersion = npm.getNextVersion(currentVersion) //await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
         await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
@@ -4502,8 +4502,8 @@ async function configureNPM(data) {
  * Retrieving the current version of the package
  * @param {*} pkgName The name of the package
  */
-async function getCurrentVersion(pkgName) {
-    return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
+async function getCurrentVersion(pkgName, workingDirectory = './') {
+    return (await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`)).stdout.replace('\n', '');
 }
 
 /**

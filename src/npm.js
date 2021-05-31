@@ -16,8 +16,8 @@ export async function configureNPM(data) {
  * Retrieving the current version of the package
  * @param {*} pkgName The name of the package
  */
-export async function getCurrentVersion(pkgName) {
-    return (await utils.execute(`npm info ${pkgName} version`)).stdout.replace('\n', '');
+export async function getCurrentVersion(pkgName, workingDirectory = './') {
+    return (await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`)).stdout.replace('\n', '');
 }
 
 /**
