@@ -743,7 +743,9 @@ async function deploy(data) {
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
-            scope: data.npm.scope
+            scope: data.npm.scope,
+            workingDirectory: data.workingDirectory,
+            debug: data.debug
         });
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
