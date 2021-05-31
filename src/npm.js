@@ -5,11 +5,11 @@ const utils = require('./utils')
  * @param {*} data The data of the NPM
  */
 export async function configureNPM(data) {
-    await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
+    await utils.execute(`echo "registry=https://registry.npmjs.org/" >> "${data.workingDirectory}.npmrc"`, data.debug);
     if(data.scope !== '') {
-        await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
+        await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> "${data.workingDirectory}.npmrc"`, data.debug);
     }
-    await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> ".npmrc"`);
+    await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> "${data.workingDirectory}.npmrc"`, data.debug);
 }
 
 /**
