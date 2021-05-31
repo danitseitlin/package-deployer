@@ -756,7 +756,7 @@ async function deploy(data) {
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
         await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
-        const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
+        const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
         if(data.prettyPrint === 'true' || data.prettyPrint === true) {
             const prettyPublish = npm.parseDeployment(publish);
