@@ -754,6 +754,7 @@ async function deploy(data) {
         const updateVersion = await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
+        await utils.execute(`cd ${data.workingDirectory} && ls`, data.debug)
         await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
