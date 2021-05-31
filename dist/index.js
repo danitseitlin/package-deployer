@@ -3538,6 +3538,7 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
@@ -4486,7 +4487,7 @@ const utils = __webpack_require__(543)
 async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
     if(data.scope !== '') {
-        pkgName = `@${data.scope}/${data.pkgName}`
+        data.pkgName = `@${data.scope}/${data.pkgName}`
         await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
     }
     await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> ".npmrc"`);
