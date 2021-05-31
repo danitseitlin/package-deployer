@@ -2,6 +2,7 @@ const deployment = require('./src/deployment')
 const github = require('@actions/github');
 const utils = require('./src/utils')
 const core = require('@actions/core');
+const workingDirectory = core.getInput('working_directory')
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
@@ -34,6 +35,7 @@ async function verifyInputs(data) {
 (async () => {
     try {
         const data = {
+            workingDirectory: workingDirectory,
             pkgName: pkgName,
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
