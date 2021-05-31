@@ -10,8 +10,9 @@ export async function deploy(data) {
     //Configuration section
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
+        if(data.scope !== '')
+            data.pkgName = `@${data.scope}/${data.pkgName}`
         await npm.configureNPM({
-            pkgName: data.pkgName,
             token: data.npm.token,
             registry: data.npm.registry,
             scope: data.npm.scope
