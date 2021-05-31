@@ -735,7 +735,7 @@ async function deploy(data) {
     //Configuration section
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
-        if(!data.npm.scope && data.npm.scope !== '')
+        if(data.npm.scope && data.npm.scope !== '')
             data.pkgName = `@${data.npm.scope}/${data.pkgName}`
         await npm.configureNPM({
             token: data.npm.token,
