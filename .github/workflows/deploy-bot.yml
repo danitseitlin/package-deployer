@@ -8,12 +8,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setting up the environment
-      run: npm install && npm run pkg-build && sudo npm link
+      run: npm install && npm run build && sudo npm link
     - name: Deploying version
       uses: danitseitlin/npm-package-deployer@master
       with:
         pkg_name: npm-package-deployer
-        pkg_registry: registry.npmjs.org
         pkg_managers: '[github, npm]'
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         github_access_token: ${{secrets.G_AUTH_TOKEN}}
