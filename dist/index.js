@@ -735,8 +735,9 @@ async function deploy(data) {
     //Configuration section
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
+        const pkgName = data.pkgName;
         if(data.npm.scope && data.npm.scope !== '')
-            data.pkgName = `@${data.npm.scope}/${data.pkgName}`
+            pkgName = `@${data.npm.scope}/${data.pkgName}`
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
@@ -745,11 +746,11 @@ async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(data.pkgName)
+        const currentVersion = await npm.getCurrentVersion(pkgName)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = await npm.getUpgradeVersion(data.pkgName, cliArguments);
+        const updateVersion = await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${data.pkgName}@${currentVersion} to version ${data.pkgName}@${updateVersion}`)
+        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
         await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
@@ -4853,7 +4854,7 @@ async function releaseGitHubVersion(data) {
  * @returns An array object of the GitHub releases
  */
 async function getGitHubVersions(data) {
-    const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
+    const res = (await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
 }
 
