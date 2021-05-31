@@ -735,7 +735,6 @@ const npm = __webpack_require__(625);
  */
 async function deploy(data) {
     //Configuration section
-    await utils.execute(`cd ${data.workingDirectory} && ls`, data.debug)
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
         let pkgName = data.pkgName;
@@ -754,8 +753,7 @@ async function deploy(data) {
         const updateVersion = await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
-        await utils.execute(`cd ${data.workingDirectory} && ls`, data.debug)
-        await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
+        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
         if(data.prettyPrint === 'true' || data.prettyPrint === true) {
