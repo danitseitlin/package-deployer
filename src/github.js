@@ -29,6 +29,6 @@ export async function releaseGitHubVersion(data) {
  * @returns An array object of the GitHub releases
  */
 export async function getGitHubVersions(data) {
-    const res = (await utils.execute(`curl https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
+    const res = (await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
 }

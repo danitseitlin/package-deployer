@@ -10,8 +10,9 @@ export async function deploy(data) {
     //Configuration section
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
-        if(!data.npm.scope && data.npm.scope !== '')
-            data.pkgName = `@${data.npm.scope}/${data.pkgName}`
+        let pkgName = data.pkgName;
+        if(data.npm.scope && data.npm.scope !== '')
+            pkgName = `@${data.npm.scope}/${data.pkgName}`
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
@@ -20,11 +21,11 @@ export async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(data.pkgName)
+        const currentVersion = await npm.getCurrentVersion(pkgName)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = await npm.getUpgradeVersion(data.pkgName, cliArguments);
+        const updateVersion = await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${data.pkgName}@${currentVersion} to version ${data.pkgName}@${updateVersion}`)
+        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
         await utils.execute(`npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
