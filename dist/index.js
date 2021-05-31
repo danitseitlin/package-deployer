@@ -560,6 +560,7 @@ const deployment = __webpack_require__(294)
 const github = __webpack_require__(469);
 const utils = __webpack_require__(543)
 const core = __webpack_require__(470);
+const workingDirectory = core.getInput('working_directory')
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
@@ -592,6 +593,7 @@ async function verifyInputs(data) {
 (async () => {
     try {
         const data = {
+            workingDirectory: workingDirectory,
             pkgName: pkgName,
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
@@ -733,6 +735,7 @@ const npm = __webpack_require__(625);
  */
 async function deploy(data) {
     //Configuration section
+    await utils.execute(`cd ${data.workingDirectory}`, data.debug)
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
         let pkgName = data.pkgName;
@@ -3540,7 +3543,6 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
-    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;

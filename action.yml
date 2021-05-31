@@ -2,6 +2,10 @@ name: 'package-deploy-bot'
 description: 'GitHub Action to release packages in multiple methods'
 author: 'Dani Tseitlin'
 inputs:
+  working_directory:
+    description: The working directory of the GitHub action
+    default: './'
+    required: true
   pkg_name:
     description: The name of the package to relase. i.e. my-pkg
     required: true
