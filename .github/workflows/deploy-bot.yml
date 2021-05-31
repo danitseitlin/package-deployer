@@ -13,7 +13,6 @@ jobs:
       uses: danitseitlin/npm-package-deployer@master
       with:
         pkg_name: npm-package-deployer
-        pkg_registry: registry.npmjs.org
         pkg_managers: '[github, npm]'
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
         github_access_token: ${{secrets.G_AUTH_TOKEN}}
