@@ -7,7 +7,6 @@ const utils = require('./utils')
 export async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
     if(data.scope !== '') {
-        data.pkgName = `@${data.scope}/${data.pkgName}`
         await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
     }
     await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> ".npmrc"`);
