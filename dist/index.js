@@ -735,7 +735,7 @@ const npm = __webpack_require__(625);
  */
 async function deploy(data) {
     //Configuration section
-    await utils.execute(`cd ${data.workingDirectory}`, data.debug)
+    await utils.execute(`cd ${data.workingDirectory} && ls`, data.debug)
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
         let pkgName = data.pkgName;
@@ -3543,6 +3543,7 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;

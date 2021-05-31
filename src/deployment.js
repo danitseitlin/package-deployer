@@ -8,7 +8,7 @@ const npm = require('./npm');
  */
 export async function deploy(data) {
     //Configuration section
-    await utils.execute(`cd ${data.workingDirectory}`, data.debug)
+    await utils.execute(`cd ${data.workingDirectory} && ls`, data.debug)
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
         let pkgName = data.pkgName;
