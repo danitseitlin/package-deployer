@@ -736,7 +736,7 @@ async function deploy(data) {
     await github.configureGitHub(data.pkgName)
     if(data.npm) {
         if(!data.npm.scope && data.npm.scope !== '')
-            data.npm.pkgName = `@${data.npm.scope}/${data.npm.pkgName}`
+            data.pkgName = `@${data.npm.scope}/${data.pkgName}`
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
@@ -4488,7 +4488,6 @@ const utils = __webpack_require__(543)
 async function configureNPM(data) {
     await utils.execute('echo "registry=https://registry.npmjs.org/" >> ".npmrc"');
     if(data.scope !== '') {
-        data.pkgName = `@${data.scope}/${data.pkgName}`
         await utils.execute(`echo "@${data.scope}:registry=https://${data.registry}/${data.scope}" >> ".npmrc"`);
     }
     await utils.execute(`echo "//${data.registry}/:_authToken=${data.token}" >> ".npmrc"`);
