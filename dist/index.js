@@ -775,6 +775,10 @@ async function deploy(data) {
         //version, branch, draft, preRelease
         const githubResponse = (await github.getGitHubVersions(data.github))[0]
         console.log(githubResponse)
+        if(!githubResponse.tag_name) {
+            console.debug(githubResponse)
+            throw new Error('tag_name value is undefined.')
+        }
         const currentVersion = githubResponse.tag_name.replace('v', '');
         const updateVersion = npm.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
