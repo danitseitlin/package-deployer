@@ -774,7 +774,6 @@ async function deploy(data) {
     if(data.github) {
         //version, branch, draft, preRelease
         const githubResponse = (await github.getGitHubVersions(data.github))[0]
-        console.log(githubResponse)
         if(!githubResponse.tag_name) {
             console.debug(githubResponse)
             throw new Error('tag_name value is undefined.')
