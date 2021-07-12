@@ -773,7 +773,9 @@ async function deploy(data) {
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const currentVersion = (await github.getGitHubVersions(data.github))[0].tag_name.replace('v', '');
+        const githubResponse = (await github.getGitHubVersions(data.github))[0]
+        console.log(githubResponse)
+        const currentVersion = githubResponse.tag_name.replace('v', '');
         const updateVersion = npm.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
@@ -3544,7 +3546,6 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
-    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
