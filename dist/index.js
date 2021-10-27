@@ -741,6 +741,7 @@ async function deploy(data) {
     await github.configureGitHub(data.pkgName)
     if(data.mainPackageManager) {
         mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
+        await utils.execute(`echo "The main package manager ${data.mainPackageManager} has version ${mainPublishVersion}"`, data.debug)
     }
     if(data.npm) {
         let pkgName = data.pkgName;
