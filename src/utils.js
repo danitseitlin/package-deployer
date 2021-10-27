@@ -44,6 +44,7 @@ export async function printHelp() {
  * @returns The next version of a release
  */
 export function getNextVersion(currentVersion) {
+    console.log(currentVersion)
     const split = currentVersion.split('.');
     const version = {
         major: parseInt(split[0]),
