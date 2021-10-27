@@ -1,5 +1,3 @@
-import { deploy } from './deployment';
-
 const utils = require('./utils')
 
 /**
