@@ -33,6 +33,7 @@ export async function deploy(data) {
  */
 async function getMainPublishVersion(data, mainManagerName) {
     let currentVersion = null;
+    console.log(`manager: ${main}`)
     switch(mainManagerName) {
         case 'github':
             currentVersion = await github.getCurrentGitHubVersion(data.github);
