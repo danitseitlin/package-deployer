@@ -4620,7 +4620,7 @@ async function deployNpmRelease(data, mainPublishVersion) {
         debug: data.debug
     });
     //NPM Package deployment section
-    const cliArguments = npm.getCliArguments(data);
+    const cliArguments = getCliArguments(data);
     await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
     await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
