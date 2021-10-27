@@ -39,7 +39,7 @@ export async function getGitHubVersions(data) {
  * @returns 
  */
 export async function getCurrentVersion(data) {
-    const githubResponse = (await github.getGitHubVersions(data))[0]
+    const githubResponse = (await getGitHubVersions(data))[0]
     if(!githubResponse.tag_name) {
         console.debug(githubResponse)
         throw new Error('tag_name value is undefined.')
