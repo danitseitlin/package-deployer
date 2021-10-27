@@ -4439,7 +4439,6 @@ async function printHelp() {
  * @returns The next version of a release
  */
 function getNextVersion(currentVersion) {
-    console.log(currentVersion)
     const split = currentVersion.split('.');
     const version = {
         major: parseInt(split[0]),
@@ -4913,12 +4912,15 @@ async function getGitHubVersions(data) {
  * @returns The current version of the latest GitHub release
  */
 async function getCurrentVersion(data) {
-    const githubResponse = (await getGitHubVersions(data))[0]
-    if(!githubResponse.tag_name) {
-        console.debug(githubResponse)
+    const githubReleases = await getGitHubVersions(data);
+    await utils.execute(`echo "The github versions ${JSON.parse(githubReleases)}"`, data.debug);
+    const githubRelease = githubReleases[0]
+    await utils.execute(`echo "The latest github version ${JSON.parse(githubRelease)}"`, data.debug);
+    if(!githubRelease.tag_name) {
+        console.debug(githubRelease)
         throw new Error('tag_name value is undefined.')
     }
-    const currentVersion = githubResponse.tag_name.replace('v', '');
+    const currentVersion = githubRelease.tag_name.replace('v', '');
     return currentVersion;
 }
 
