@@ -67,6 +67,6 @@ const deployment = require('./src/deployment')
         else utils.printHelp()
     } catch (error) {
         console.log(error);
-        throw Error(error);
+        //throw Error(error);
     }
 })();
