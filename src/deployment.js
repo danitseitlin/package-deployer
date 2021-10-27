@@ -27,8 +27,8 @@ export async function deploy(data) {
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const packageExists = await npm.doesPackageExist(pkgName, cliArguments)
         const updateVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1'; //await npm.getUpgradeVersion(pkgName, cliArguments);
-        await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
         if(packageExists) {
+            await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug);
             console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`);
         }
         else {
