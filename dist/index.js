@@ -764,9 +764,11 @@ async function getMainPublishVersion(data, mainManagerName) {
     let currentVersion = null;
     switch(mainManagerName) {
         case 'github':
-            currentVersion = await github.getCurrentVersion(data.github);
+            currentVersion = await github.getCurrentGitHubVersion(data);
+            break;
         case 'npm':
-            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory)
+            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory);
+            break;
         default:
             break;
     }
@@ -4439,7 +4441,6 @@ async function printHelp() {
  * @returns The next version of a release
  */
 function getNextVersion(currentVersion) {
-    console.log(currentVersion)
     const split = currentVersion.split('.');
     const version = {
         major: parseInt(split[0]),
@@ -4870,7 +4871,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureGitHub", function() { return configureGitHub; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "releaseGitHubVersion", function() { return releaseGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentVersion", function() { return getCurrentVersion; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentGitHubVersion", function() { return getCurrentGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
 const utils = __webpack_require__(543);
 
@@ -4912,13 +4913,15 @@ async function getGitHubVersions(data) {
  * @param {*} data The data of GitHub
  * @returns The current version of the latest GitHub release
  */
-async function getCurrentVersion(data) {
-    const githubResponse = (await getGitHubVersions(data))[0]
-    if(!githubResponse.tag_name) {
-        console.debug(githubResponse)
+async function getCurrentGitHubVersion(data) {
+    const githubReleases = await getGitHubVersions(data.github);
+    const githubRelease = githubReleases[0]
+    await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);
+    if(!githubRelease.tag_name) {
+        console.debug(githubRelease)
         throw new Error('tag_name value is undefined.')
     }
-    const currentVersion = githubResponse.tag_name.replace('v', '');
+    const currentVersion = githubRelease.tag_name.replace('v', '');
     return currentVersion;
 }
 
@@ -4929,7 +4932,7 @@ async function getCurrentVersion(data) {
  */
 async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(data.github);
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
     await releaseGitHubVersion({
         owner: data.github.owner,

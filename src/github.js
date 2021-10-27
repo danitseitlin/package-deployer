@@ -38,13 +38,15 @@ export async function getGitHubVersions(data) {
  * @param {*} data The data of GitHub
  * @returns The current version of the latest GitHub release
  */
-export async function getCurrentVersion(data) {
-    const githubResponse = (await getGitHubVersions(data))[0]
-    if(!githubResponse.tag_name) {
-        console.debug(githubResponse)
+export async function getCurrentGitHubVersion(data) {
+    const githubReleases = await getGitHubVersions(data.github);
+    const githubRelease = githubReleases[0]
+    await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);
+    if(!githubRelease.tag_name) {
+        console.debug(githubRelease)
         throw new Error('tag_name value is undefined.')
     }
-    const currentVersion = githubResponse.tag_name.replace('v', '');
+    const currentVersion = githubRelease.tag_name.replace('v', '');
     return currentVersion;
 }
 
@@ -55,7 +57,7 @@ export async function getCurrentVersion(data) {
  */
 export async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(data.github);
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
     await releaseGitHubVersion({
         owner: data.github.owner,
