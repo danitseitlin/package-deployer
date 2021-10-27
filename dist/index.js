@@ -790,7 +790,7 @@ async function deploy(data) {
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const currentVersion = mainPublishVersion ? mainPublishVersion: github.getCurrentVersion(data.github);
+        const currentVersion = mainPublishVersion ? mainPublishVersion: await github.getCurrentVersion(data.github);
         const publishVersion = utils.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
