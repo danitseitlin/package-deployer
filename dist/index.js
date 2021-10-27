@@ -561,6 +561,7 @@ const github = __webpack_require__(469);
 const utils = __webpack_require__(543)
 const core = __webpack_require__(470);
 const workingDirectory = core.getInput('working_directory')
+const mainPkgManager = core.getInput('main_pkg_manager');
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
@@ -597,7 +598,8 @@ async function verifyInputs(data) {
             pkgName: pkgName,
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
-            dryRun: utils.stringToBoolean(dryRun)
+            dryRun: utils.stringToBoolean(dryRun),
+            mainPackageManager: mainPkgManager
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
@@ -735,11 +737,17 @@ const npm = __webpack_require__(625);
  */
 async function deploy(data) {
     //Configuration section
+    let mainPublishVersion = undefined;
     await github.configureGitHub(data.pkgName)
+    if(data.mainPackageManager) {
+        mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
+    }
     if(data.npm) {
         let pkgName = data.pkgName;
-        if(data.npm.scope && data.npm.scope !== '')
-            pkgName = `@${data.npm.scope}/${data.pkgName}`
+        if(data.npm.scope && data.npm.scope !== ''){
+            pkgName = `@${data.npm.scope}/${data.pkgName}`;
+            data.pkgName = pkgName;
+        }
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
@@ -750,11 +758,11 @@ async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
+        const currentVersion = mainPublishVersion ? mainPublishVersion: await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
         await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
-        const publishVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1';
+        const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
         if(packageExists) {
             await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
             console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
@@ -774,19 +782,15 @@ async function deploy(data) {
             console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
             console.log('========================')
         }
-        else
+        else {
             console.log(publish)
+        }
     }
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const githubResponse = (await github.getGitHubVersions(data.github))[0]
-        if(!githubResponse.tag_name) {
-            console.debug(githubResponse)
-            throw new Error('tag_name value is undefined.')
-        }
-        const currentVersion = githubResponse.tag_name.replace('v', '');
-        const publishVersion = npm.getNextVersion(currentVersion);
+        const currentVersion = mainPublishVersion ? mainPublishVersion: github.getCurrentVersion(data.github);
+        const publishVersion = utils.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
             repo: data.github.repo,
@@ -799,6 +803,25 @@ async function deploy(data) {
             dryRun: data.dryRun
         })
     }
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} mainManagerName 
+ * @returns 
+ */
+async function getMainPublishVersion(data, mainManagerName) {
+    const currentVersion = null;
+    switch(mainManagerName) {
+        case 'github':
+            currentVersion = await github.getCurrentVersion(data.github);
+        case 'npm':
+            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory)
+        default:
+            break;
+    }
+    return utils.getNextVersion(currentVersion);
 }
 
 /***/ }),
@@ -4420,6 +4443,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "execute", function() { return execute; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stringToBoolean", function() { return stringToBoolean; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "printHelp", function() { return printHelp; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextVersion", function() { return getNextVersion; });
 const child_process = __webpack_require__(129);
 
 /**
@@ -4458,6 +4482,24 @@ async function printHelp() {
     console.log(chalk.white('--publish-pretty-output | Printing a pretified publish output'))
     console.log(chalk.white('for help, run deploy-pkg --help'))
     console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
+}
+
+/**
+ * Retrieve the next version
+ * @param {*} currentVersion The current version to upgrade from 
+ * @returns The next version of a release
+ */
+function getNextVersion(currentVersion) {
+    const split = currentVersion.split('.');
+    const version = {
+        major: parseInt(split[0]),
+        minor: parseInt(split[split.length-2]),
+        patch: parseInt(split[split.length-1])
+    }
+    if(version.patch < 9) version.patch++;
+    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
+    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
+    return `${version.major}.${version.minor}.${version.patch}`
 }
 
 /***/ }),
@@ -4846,6 +4888,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureGitHub", function() { return configureGitHub; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "releaseGitHubVersion", function() { return releaseGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentVersion", function() { return getCurrentVersion; });
 const utils = __webpack_require__(543);
 
 /**
@@ -4879,6 +4922,21 @@ async function releaseGitHubVersion(data) {
 async function getGitHubVersions(data) {
     const res = (await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
+async function getCurrentVersion(data) {
+    const githubResponse = (await github.getGitHubVersions(data))[0]
+    if(!githubResponse.tag_name) {
+        console.debug(githubResponse)
+        throw new Error('tag_name value is undefined.')
+    }
+    const currentVersion = githubResponse.tag_name.replace('v', '');
+    return currentVersion;
 }
 
 /***/ }),

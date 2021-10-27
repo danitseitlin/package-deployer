@@ -3,7 +3,7 @@ const github = require('@actions/github');
 const utils = require('./src/utils')
 const core = require('@actions/core');
 const workingDirectory = core.getInput('working_directory')
-const mainPackageManager = core.getInput('main_pkg_manager');
+const mainPkgManager = core.getInput('main_pkg_manager');
 const packageManagers = core.getInput('pkg_managers');
 const githubAccessToken = core.getInput('github_access_token');
 const npmAccessToken = core.getInput('npm_access_token');
@@ -41,7 +41,7 @@ async function verifyInputs(data) {
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
             dryRun: utils.stringToBoolean(dryRun),
-            mainPackageManager: mainPackageManager ?? null
+            mainPackageManager: mainPkgManager
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
