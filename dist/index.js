@@ -4534,7 +4534,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "configureNPM", function() { return configureNPM; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentVersion", function() { return getCurrentVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUpgradeVersion", function() { return getUpgradeVersion; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getNextVersion", function() { return getNextVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCliArguments", function() { return getCliArguments; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "doesPackageExist", function() { return doesPackageExist; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseDeployment", function() { return parseDeployment; });
@@ -4578,24 +4577,6 @@ async function getUpgradeVersion(pkgName, cliArguments) {
         return version;
     }
     return '0.0.1';
-}
-
-/**
- * Retrieve the next version
- * @param {*} currentVersion The current version to upgrade from 
- * @returns The next version of a release
- */
-function getNextVersion(currentVersion) {
-    const split = currentVersion.split('.');
-    const version = {
-        major: parseInt(split[0]),
-        minor: parseInt(split[split.length-2]),
-        patch: parseInt(split[split.length-1])
-    }
-    if(version.patch < 9) version.patch++;
-    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
-    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
-    return `${version.major}.${version.minor}.${version.patch}`
 }
 
 /***
