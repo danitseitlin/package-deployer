@@ -813,7 +813,7 @@ async function deploy(data) {
  * @returns 
  */
 async function getMainPublishVersion(data, mainManagerName) {
-    const currentVersion = null;
+    let currentVersion = null;
     switch(mainManagerName) {
         case 'github':
             currentVersion = await github.getCurrentVersion(data.github);
