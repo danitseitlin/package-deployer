@@ -25,9 +25,15 @@ export async function deploy(data) {
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
         const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = npm.getNextVersion(currentVersion) //await npm.getUpgradeVersion(pkgName, cliArguments);
+        const packageExists = await npm.doesPackageExist(pkgName, cliArguments)
+        const updateVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1'; //await npm.getUpgradeVersion(pkgName, cliArguments);
         await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
+        if(packageExists) {
+            console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`);
+        }
+        else {
+            console.log(`Publishing new package ${pkgName}@${updateVersion}`);
+        }
         await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
