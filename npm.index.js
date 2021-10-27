@@ -26,7 +26,6 @@ const deployment = require('./src/deployment')
 
 (async () => {
     try {
-        console.log('msg')
         const cliArguments = process.argv.slice(3)
         const isTriggered = (process.argv[1].includes('deploy-pkg') || process.argv[1].includes('\\npm-package-deployer\\lib\\npm.index.js'));
         //Verifying the deploy CLI command was executed
@@ -67,6 +66,6 @@ const deployment = require('./src/deployment')
         else utils.printHelp()
     } catch (error) {
         console.log(error);
-        //throw Error(error);
+        throw Error(error);
     }
 })();
