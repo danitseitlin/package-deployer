@@ -78,10 +78,10 @@ export async function deploy(data) {
 }
 
 /**
- * 
- * @param {*} data 
- * @param {*} mainManagerName 
- * @returns 
+ * Retrieving the main publish version
+ * @param {*} data The data of the action
+ * @param {*} mainManagerName The main manager name.
+ * @returns The next version of the main manager name
  */
 async function getMainPublishVersion(data, mainManagerName) {
     let currentVersion = null;

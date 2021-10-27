@@ -34,9 +34,9 @@ export async function getGitHubVersions(data) {
 }
 
 /**
- * 
- * @param {*} data 
- * @returns 
+ * Retrieving the current version of the package
+ * @param {*} data The data of GitHub
+ * @returns The current version of the latest GitHub release
  */
 export async function getCurrentVersion(data) {
     const githubResponse = (await getGitHubVersions(data))[0]

@@ -41,7 +41,7 @@ jobs:
     - name: Deploying version with main pkg manager
       uses: ./
       with:
-        pkg_name: npm-package-deployer-non
+        pkg_name: npm-package-deployer
         main_pkg_manager: npm
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
