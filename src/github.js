@@ -55,9 +55,9 @@ export async function getCurrentVersion(data) {
  */
 export async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await github.getCurrentVersion(data.github);
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(data.github);
     const publishVersion = utils.getNextVersion(currentVersion);
-    await github.releaseGitHubVersion({
+    await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
         token: data.github.token,

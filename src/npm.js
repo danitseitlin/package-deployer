@@ -122,7 +122,7 @@ export async function deployNpmRelease(data, mainPublishVersion) {
         pkgName = `@${data.npm.scope}/${data.pkgName}`;
         data.pkgName = pkgName;
     }
-    await npm.configureNPM({
+    await configureNPM({
         token: data.npm.token,
         registry: data.npm.registry,
         scope: data.npm.scope,
@@ -132,9 +132,9 @@ export async function deployNpmRelease(data, mainPublishVersion) {
     //NPM Package deployment section
     const cliArguments = npm.getCliArguments(data);
     await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await npm.getCurrentVersion(pkgName, data.workingDirectory)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
     await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-    const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
+    const packageExists = await doesPackageExist(pkgName, cliArguments);
     await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
     const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
     if(packageExists) {
@@ -148,7 +148,7 @@ export async function deployNpmRelease(data, mainPublishVersion) {
     const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
     console.log('==== Publish Output ====')
     if(data.prettyPrint === 'true' || data.prettyPrint === true) {
-        const prettyPublish = npm.parseDeployment(publish);
+        const prettyPublish = parseDeployment(publish);
         const { files, ...rest } = prettyPublish
         for(const item in rest) {
             console.log(`${item}: ${rest[item].toString()}`)

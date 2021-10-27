@@ -739,14 +739,16 @@ async function deploy(data) {
     //Configuration section
     let mainPublishVersion = undefined;
     await github.configureGitHub(data.pkgName)
+    //In case we set a main package manager, we wil obtain it's next version.
     if(data.mainPackageManager) {
         mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
         await utils.execute(`echo "The main package manager ${data.mainPackageManager} has version ${mainPublishVersion}"`, data.debug)
     }
+    //In case we set a release of an NPM package
     if(data.npm) {
         await npm.deployNpmRelease(data, mainPublishVersion);
     }
-    //GitHub Release section
+    //In case we set a release of a GitHub release
     if(data.github) {
         await github.deployGithubRelease(data, mainPublishVersion);
     }
@@ -4610,7 +4612,7 @@ async function deployNpmRelease(data, mainPublishVersion) {
         pkgName = `@${data.npm.scope}/${data.pkgName}`;
         data.pkgName = pkgName;
     }
-    await npm.configureNPM({
+    await configureNPM({
         token: data.npm.token,
         registry: data.npm.registry,
         scope: data.npm.scope,
@@ -4620,9 +4622,9 @@ async function deployNpmRelease(data, mainPublishVersion) {
     //NPM Package deployment section
     const cliArguments = npm.getCliArguments(data);
     await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await npm.getCurrentVersion(pkgName, data.workingDirectory)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
     await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-    const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
+    const packageExists = await doesPackageExist(pkgName, cliArguments);
     await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
     const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
     if(packageExists) {
@@ -4636,7 +4638,7 @@ async function deployNpmRelease(data, mainPublishVersion) {
     const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
     console.log('==== Publish Output ====')
     if(data.prettyPrint === 'true' || data.prettyPrint === true) {
-        const prettyPublish = npm.parseDeployment(publish);
+        const prettyPublish = parseDeployment(publish);
         const { files, ...rest } = prettyPublish
         for(const item in rest) {
             console.log(`${item}: ${rest[item].toString()}`)
@@ -4930,9 +4932,9 @@ async function getCurrentVersion(data) {
  */
 async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await github.getCurrentVersion(data.github);
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(data.github);
     const publishVersion = utils.getNextVersion(currentVersion);
-    await github.releaseGitHubVersion({
+    await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
         token: data.github.token,

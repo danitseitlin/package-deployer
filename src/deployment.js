@@ -10,14 +10,16 @@ export async function deploy(data) {
     //Configuration section
     let mainPublishVersion = undefined;
     await github.configureGitHub(data.pkgName)
+    //In case we set a main package manager, we wil obtain it's next version.
     if(data.mainPackageManager) {
         mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
         await utils.execute(`echo "The main package manager ${data.mainPackageManager} has version ${mainPublishVersion}"`, data.debug)
     }
+    //In case we set a release of an NPM package
     if(data.npm) {
         await npm.deployNpmRelease(data, mainPublishVersion);
     }
-    //GitHub Release section
+    //In case we set a release of a GitHub release
     if(data.github) {
         await github.deployGithubRelease(data, mainPublishVersion);
     }
