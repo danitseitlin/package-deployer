@@ -40,24 +40,6 @@ export async function getUpgradeVersion(pkgName, cliArguments) {
     return '0.0.1';
 }
 
-/**
- * Retrieve the next version
- * @param {*} currentVersion The current version to upgrade from 
- * @returns The next version of a release
- */
-export function getNextVersion(currentVersion) {
-    const split = currentVersion.split('.');
-    const version = {
-        major: parseInt(split[0]),
-        minor: parseInt(split[split.length-2]),
-        patch: parseInt(split[split.length-1])
-    }
-    if(version.patch < 9) version.patch++;
-    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
-    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
-    return `${version.major}.${version.minor}.${version.patch}`
-}
-
 /***
  * Retrieving the args for the CLI commands
  * @param {*} data The given data of the deployment
@@ -124,5 +106,55 @@ export function parseDeployment(output) {
         shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
         integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
         totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
+    }
+}
+
+/**
+ * Deploying an NPM package
+ * @param {*} data The data of the action
+ * @param {*} mainPublishVersion The main publish version. if available.
+ */
+export async function deployNpmRelease(data, mainPublishVersion) {
+    let pkgName = data.pkgName;
+    if(data.npm.scope && data.npm.scope !== ''){
+        pkgName = `@${data.npm.scope}/${data.pkgName}`;
+        data.pkgName = pkgName;
+    }
+    await configureNPM({
+        token: data.npm.token,
+        registry: data.npm.registry,
+        scope: data.npm.scope,
+        workingDirectory: data.workingDirectory,
+        debug: data.debug
+    });
+    //NPM Package deployment section
+    const cliArguments = getCliArguments(data);
+    await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
+    await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
+    const packageExists = await doesPackageExist(pkgName, cliArguments);
+    await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
+    const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
+    if(packageExists) {
+        await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
+        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
+    }
+    else {
+        console.log(`Publishing new package ${pkgName}@${publishVersion}`);
+    }
+    await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version${cliArguments}`, data.debug);
+    const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
+    console.log('==== Publish Output ====')
+    if(data.prettyPrint === 'true' || data.prettyPrint === true) {
+        const prettyPublish = parseDeployment(publish);
+        const { files, ...rest } = prettyPublish
+        for(const item in rest) {
+            console.log(`${item}: ${rest[item].toString()}`)
+        }
+        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+        console.log('========================')
+    }
+    else {
+        console.log(publish)
     }
 }

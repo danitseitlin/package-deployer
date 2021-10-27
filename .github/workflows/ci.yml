@@ -38,3 +38,25 @@ jobs:
         github_access_token: ${{secrets.G_AUTH_TOKEN}}
         dry_run: true
         debug: true
+    - name: Deploying version with main pkg manager NPM
+      uses: ./
+      with:
+        pkg_name: npm-package-deployer
+        main_pkg_manager: npm
+        pkg_managers: '[github, npm]'
+        npm_registry: registry.npmjs.org
+        npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
+        github_access_token: ${{secrets.G_AUTH_TOKEN}}
+        dry_run: true
+        debug: true
+    - name: Deploying version with main pkg manager GitHub
+      uses: ./
+      with:
+        pkg_name: npm-package-deployer
+        main_pkg_manager: github
+        pkg_managers: '[github, npm]'
+        npm_registry: registry.npmjs.org
+        npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
+        github_access_token: ${{secrets.G_AUTH_TOKEN}}
+        dry_run: true
+        debug: true
