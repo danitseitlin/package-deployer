@@ -765,7 +765,7 @@ async function getMainPublishVersion(data, mainManagerName) {
     console.log(`manager: ${mainManagerName}`)
     switch(mainManagerName) {
         case 'github':
-            currentVersion = await github.getCurrentGitHubVersion(data.github);
+            currentVersion = await github.getCurrentGitHubVersion(data);
         case 'npm':
             currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory)
         default:
@@ -4913,7 +4913,7 @@ async function getGitHubVersions(data) {
  * @returns The current version of the latest GitHub release
  */
 async function getCurrentGitHubVersion(data) {
-    const githubReleases = await getGitHubVersions(data);
+    const githubReleases = await getGitHubVersions(data.github);
     await utils.execute(`echo "The github versions ${JSON.stringify(githubReleases)}"`, data.debug);
     const githubRelease = githubReleases[0]
     await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);

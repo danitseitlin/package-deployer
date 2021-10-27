@@ -39,7 +39,7 @@ export async function getGitHubVersions(data) {
  * @returns The current version of the latest GitHub release
  */
 export async function getCurrentGitHubVersion(data) {
-    const githubReleases = await getGitHubVersions(data);
+    const githubReleases = await getGitHubVersions(data.github);
     await utils.execute(`echo "The github versions ${JSON.stringify(githubReleases)}"`, data.debug);
     const githubRelease = githubReleases[0]
     await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);
