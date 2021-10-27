@@ -47,3 +47,25 @@ export async function getCurrentVersion(data) {
     const currentVersion = githubResponse.tag_name.replace('v', '');
     return currentVersion;
 }
+
+/**
+ * Deploying a GitHub release
+ * @param {*} data The data of the action
+ * @param {*} mainPublishVersion The main publish version. if available.
+ */
+export async function deployGithubRelease(data, mainPublishVersion) {
+    //version, branch, draft, preRelease
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await github.getCurrentVersion(data.github);
+    const publishVersion = utils.getNextVersion(currentVersion);
+    await github.releaseGitHubVersion({
+        owner: data.github.owner,
+        repo: data.github.repo,
+        token: data.github.token,
+        version: publishVersion,
+        branch: 'master',
+        draft: false,
+        preRelease: false,
+        debug: data.debug,
+        dryRun: data.dryRun
+    })
+}

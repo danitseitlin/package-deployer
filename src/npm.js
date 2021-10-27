@@ -1,3 +1,5 @@
+import { deploy } from './deployment';
+
 const utils = require('./utils')
 
 /**
@@ -106,5 +108,55 @@ export function parseDeployment(output) {
         shasum: (shasum !== undefined) ? shasum.replace(/  /g, '').split(':')[1]: null,
         integrity: (integrity !== undefined) ? integrity.replace(/  /g, '').split(': ')[1]: null,
         totalFiles: (totalFiles !== undefined) ? parseInt(totalFiles.replace(/  /g, '').split(': ')[1]): null,
+    }
+}
+
+/**
+ * Deploying an NPM package
+ * @param {*} data The data of the action
+ * @param {*} mainPublishVersion The main publish version. if available.
+ */
+export async function deployNpmRelease(data, mainPublishVersion) {
+    let pkgName = data.pkgName;
+    if(data.npm.scope && data.npm.scope !== ''){
+        pkgName = `@${data.npm.scope}/${data.pkgName}`;
+        data.pkgName = pkgName;
+    }
+    await npm.configureNPM({
+        token: data.npm.token,
+        registry: data.npm.registry,
+        scope: data.npm.scope,
+        workingDirectory: data.workingDirectory,
+        debug: data.debug
+    });
+    //NPM Package deployment section
+    const cliArguments = npm.getCliArguments(data);
+    await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await npm.getCurrentVersion(pkgName, data.workingDirectory)
+    await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
+    const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
+    await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
+    const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
+    if(packageExists) {
+        await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
+        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
+    }
+    else {
+        console.log(`Publishing new package ${pkgName}@${publishVersion}`);
+    }
+    await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version${cliArguments}`, data.debug);
+    const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
+    console.log('==== Publish Output ====')
+    if(data.prettyPrint === 'true' || data.prettyPrint === true) {
+        const prettyPublish = npm.parseDeployment(publish);
+        const { files, ...rest } = prettyPublish
+        for(const item in rest) {
+            console.log(`${item}: ${rest[item].toString()}`)
+        }
+        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+        console.log('========================')
+    }
+    else {
+        console.log(publish)
     }
 }
