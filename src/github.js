@@ -32,3 +32,18 @@ export async function getGitHubVersions(data) {
     const res = (await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)).stdout;
     return JSON.parse(res)
 }
+
+/**
+ * 
+ * @param {*} data 
+ * @returns 
+ */
+export async function getCurrentVersion(data) {
+    const githubResponse = (await github.getGitHubVersions(data))[0]
+    if(!githubResponse.tag_name) {
+        console.debug(githubResponse)
+        throw new Error('tag_name value is undefined.')
+    }
+    const currentVersion = githubResponse.tag_name.replace('v', '');
+    return currentVersion;
+}

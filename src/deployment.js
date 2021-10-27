@@ -8,11 +8,17 @@ const npm = require('./npm');
  */
 export async function deploy(data) {
     //Configuration section
+    let mainPublishVersion = undefined;
     await github.configureGitHub(data.pkgName)
+    if(data.mainPackageManager) {
+        mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
+    }
     if(data.npm) {
         let pkgName = data.pkgName;
-        if(data.npm.scope && data.npm.scope !== '')
-            pkgName = `@${data.npm.scope}/${data.pkgName}`
+        if(data.npm.scope && data.npm.scope !== ''){
+            pkgName = `@${data.npm.scope}/${data.pkgName}`;
+            data.pkgName = pkgName;
+        }
         await npm.configureNPM({
             token: data.npm.token,
             registry: data.npm.registry,
@@ -23,11 +29,11 @@ export async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
+        const currentVersion = mainPublishVersion ?? await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
         await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
-        const publishVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1';
+        const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
         if(packageExists) {
             await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
             console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
@@ -47,19 +53,15 @@ export async function deploy(data) {
             console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
             console.log('========================')
         }
-        else
+        else {
             console.log(publish)
+        }
     }
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const githubResponse = (await github.getGitHubVersions(data.github))[0]
-        if(!githubResponse.tag_name) {
-            console.debug(githubResponse)
-            throw new Error('tag_name value is undefined.')
-        }
-        const currentVersion = githubResponse.tag_name.replace('v', '');
-        const publishVersion = npm.getNextVersion(currentVersion);
+        const currentVersion = mainPublishVersion ?? github.getCurrentVersion(data.github);
+        const publishVersion = utils.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
             repo: data.github.repo,
@@ -72,4 +74,23 @@ export async function deploy(data) {
             dryRun: data.dryRun
         })
     }
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} mainManagerName 
+ * @returns 
+ */
+async function getMainPublishVersion(data, mainManagerName) {
+    const currentVersion = null;
+    switch(mainManagerName) {
+        case 'github':
+            currentVersion = await github.getCurrentVersion(data.github);
+        case 'npm':
+            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory)
+        default:
+            break;
+    }
+    return utils.getNextVersion(currentVersion);
 }
