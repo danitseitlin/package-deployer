@@ -27,15 +27,15 @@ export async function deploy(data) {
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
         await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
-        const updateVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1'; //await npm.getUpgradeVersion(pkgName, cliArguments);
+        const publishVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1';
         if(packageExists) {
-            await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug);
-            console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`);
+            await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
+            console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
         }
         else {
-            console.log(`Publishing new package ${pkgName}@${updateVersion}`);
+            console.log(`Publishing new package ${pkgName}@${publishVersion}`);
         }
-        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
+        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
         if(data.prettyPrint === 'true' || data.prettyPrint === true) {
@@ -59,12 +59,12 @@ export async function deploy(data) {
             throw new Error('tag_name value is undefined.')
         }
         const currentVersion = githubResponse.tag_name.replace('v', '');
-        const updateVersion = npm.getNextVersion(currentVersion);
+        const publishVersion = npm.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
             repo: data.github.repo,
             token: data.github.token,
-            version: updateVersion,
+            version: publishVersion,
             branch: 'master',
             draft: false,
             preRelease: false,
