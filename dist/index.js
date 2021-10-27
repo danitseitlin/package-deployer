@@ -4932,7 +4932,7 @@ async function getCurrentGitHubVersion(data) {
  */
 async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
-    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data.github);
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
     await releaseGitHubVersion({
         owner: data.github.owner,
