@@ -33,7 +33,8 @@ export async function getCurrentVersion(pkgName, workingDirectory = './') {
  */
 export async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
-        const version = getNextVersion(await getCurrentVersion(pkgName));
+        const currentVersion = await getCurrentVersion(pkgName);
+        const version = getNextVersion(currentVersion);
         return version;
     }
     return '0.0.1';
