@@ -29,7 +29,7 @@ export async function deploy(data) {
         //NPM Package deployment section
         const cliArguments = npm.getCliArguments(data);
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = mainPublishVersion ?? await npm.getCurrentVersion(pkgName, data.workingDirectory)
+        const currentVersion = mainPublishVersion ? mainPublishVersion: await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
         const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
         await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
@@ -60,7 +60,7 @@ export async function deploy(data) {
     //GitHub Release section
     if(data.github) {
         //version, branch, draft, preRelease
-        const currentVersion = mainPublishVersion ?? github.getCurrentVersion(data.github);
+        const currentVersion = mainPublishVersion ? mainPublishVersion: github.getCurrentVersion(data.github);
         const publishVersion = utils.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
