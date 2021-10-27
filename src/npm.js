@@ -85,7 +85,7 @@ export async function doesPackageExist(pkgName, cliArguments) {
 
     if(!isScopedRegistry && !isScope) {
         const response = await utils.execute(`npm search ${pkgName}${cliArguments}`);
-        const isExists = response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
+        const isExists = response.stdout.indexOf(`No matches found for "${pkgName}"`) === -1;
         console.log(`is exists: ${isExists}`)
         console.log(response)
         return isExists;
