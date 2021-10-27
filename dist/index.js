@@ -752,10 +752,17 @@ async function deploy(data) {
         await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
         const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
         await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = npm.getNextVersion(currentVersion) //await npm.getUpgradeVersion(pkgName, cliArguments);
-        await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
-        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
+        const packageExists = await npm.doesPackageExist(pkgName, cliArguments);
+        await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
+        const publishVersion = packageExists ? npm.getNextVersion(currentVersion): '0.0.1';
+        if(packageExists) {
+            await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
+            console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
+        }
+        else {
+            console.log(`Publishing new package ${pkgName}@${publishVersion}`);
+        }
+        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version${cliArguments}`, data.debug);
         const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
         console.log('==== Publish Output ====')
         if(data.prettyPrint === 'true' || data.prettyPrint === true) {
@@ -779,12 +786,12 @@ async function deploy(data) {
             throw new Error('tag_name value is undefined.')
         }
         const currentVersion = githubResponse.tag_name.replace('v', '');
-        const updateVersion = npm.getNextVersion(currentVersion);
+        const publishVersion = npm.getNextVersion(currentVersion);
         await github.releaseGitHubVersion({
             owner: data.github.owner,
             repo: data.github.repo,
             token: data.github.token,
-            version: updateVersion,
+            version: publishVersion,
             branch: 'master',
             draft: false,
             preRelease: false,
@@ -4507,7 +4514,13 @@ async function configureNPM(data) {
  * @param {*} pkgName The name of the package
  */
 async function getCurrentVersion(pkgName, workingDirectory = './') {
-    return (await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`)).stdout.replace('\n', '');
+    try {
+        const currentVersion = await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`);
+        return currentVersion.stdout.replace('\n', '');
+    }
+    catch (err) {
+        return '0.0.1'
+    }
 }
 
 /**
@@ -4517,7 +4530,8 @@ async function getCurrentVersion(pkgName, workingDirectory = './') {
  */
 async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
-        const version = getNextVersion(await getCurrentVersion(pkgName));
+        const currentVersion = await getCurrentVersion(pkgName);
+        const version = getNextVersion(currentVersion);
         return version;
     }
     return '0.0.1';
@@ -4568,7 +4582,8 @@ async function doesPackageExist(pkgName, cliArguments) {
 
     if(!isScopedRegistry && !isScope) {
         const response = await utils.execute(`npm search ${pkgName}${cliArguments}`);
-        return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
+        const isExists = response.stdout.indexOf(`No matches found for "${pkgName}"`) === -1;
+        return isExists;
     }
     else {
         console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')

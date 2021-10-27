@@ -17,7 +17,13 @@ export async function configureNPM(data) {
  * @param {*} pkgName The name of the package
  */
 export async function getCurrentVersion(pkgName, workingDirectory = './') {
-    return (await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`)).stdout.replace('\n', '');
+    try {
+        const currentVersion = await utils.execute(`cd ${workingDirectory} && npm info ${pkgName} version`);
+        return currentVersion.stdout.replace('\n', '');
+    }
+    catch (err) {
+        return '0.0.1'
+    }
 }
 
 /**
@@ -27,7 +33,8 @@ export async function getCurrentVersion(pkgName, workingDirectory = './') {
  */
 export async function getUpgradeVersion(pkgName, cliArguments) {
     if(await doesPackageExist(pkgName, cliArguments)) {
-        const version = getNextVersion(await getCurrentVersion(pkgName));
+        const currentVersion = await getCurrentVersion(pkgName);
+        const version = getNextVersion(currentVersion);
         return version;
     }
     return '0.0.1';
@@ -78,7 +85,8 @@ export async function doesPackageExist(pkgName, cliArguments) {
 
     if(!isScopedRegistry && !isScope) {
         const response = await utils.execute(`npm search ${pkgName}${cliArguments}`);
-        return response.stdout.indexOf(`No matches found for "${pkgName}"\n`) === -1;
+        const isExists = response.stdout.indexOf(`No matches found for "${pkgName}"`) === -1;
+        return isExists;
     }
     else {
         console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')
