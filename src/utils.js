@@ -37,3 +37,21 @@ export async function printHelp() {
     console.log(chalk.white('for help, run deploy-pkg --help'))
     console.log(chalk.blueBright('If you liked our repo, please star it here https://github.com/danitseitlin/npm-package-deployer'))
 }
+
+/**
+ * Retrieve the next version
+ * @param {*} currentVersion The current version to upgrade from 
+ * @returns The next version of a release
+ */
+export function getNextVersion(currentVersion) {
+    const split = currentVersion.split('.');
+    const version = {
+        major: parseInt(split[0]),
+        minor: parseInt(split[split.length-2]),
+        patch: parseInt(split[split.length-1])
+    }
+    if(version.patch < 9) version.patch++;
+    else if(version.patch === 9 && version.minor < 9) {version.patch = 0; version.minor++}
+    else if(version.patch === 9 && version.minor === 9 ) {version.patch = 0; version.minor = 0; version.major++;}
+    return `${version.major}.${version.minor}.${version.patch}`
+}

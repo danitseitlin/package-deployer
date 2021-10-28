@@ -9,6 +9,9 @@ inputs:
   pkg_name:
     description: The name of the package to relase. i.e. my-pkg
     required: true
+  main_pkg_manager:
+    description: Set a main package manger, this will make sure all the versions are released based on the main package manger next version.
+    required: false
   pkg_managers:
       description: A list of deployment apps. i.e. [npm, github]. Available options are npm, github.
       default: '[github, npm]'
