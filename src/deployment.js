@@ -8,61 +8,40 @@ const npm = require('./npm');
  */
 export async function deploy(data) {
     //Configuration section
+    let mainPublishVersion = undefined;
     await github.configureGitHub(data.pkgName)
+    //In case we set a main package manager, we wil obtain it's next version.
+    if(data.mainPackageManager) {
+        mainPublishVersion = await getMainPublishVersion(data, data.mainPackageManager)
+        await utils.execute(`echo "The main package manager ${data.mainPackageManager} has version ${mainPublishVersion}"`, data.debug)
+    }
+    //In case we set a release of an NPM package
     if(data.npm) {
-        let pkgName = data.pkgName;
-        if(data.npm.scope && data.npm.scope !== '')
-            pkgName = `@${data.npm.scope}/${data.pkgName}`
-        await npm.configureNPM({
-            token: data.npm.token,
-            registry: data.npm.registry,
-            scope: data.npm.scope,
-            workingDirectory: data.workingDirectory,
-            debug: data.debug
-        });
-        //NPM Package deployment section
-        const cliArguments = npm.getCliArguments(data);
-        await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
-        const currentVersion = await npm.getCurrentVersion(pkgName, data.workingDirectory)
-        await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
-        const updateVersion = npm.getNextVersion(currentVersion) //await npm.getUpgradeVersion(pkgName, cliArguments);
-        await utils.execute(`echo "new ver: ${updateVersion}"`, data.debug)
-        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${updateVersion}`)
-        await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${updateVersion} --allow-same-version${cliArguments}`, data.debug);
-        const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
-        console.log('==== Publish Output ====')
-        if(data.prettyPrint === 'true' || data.prettyPrint === true) {
-            const prettyPublish = npm.parseDeployment(publish);
-            const { files, ...rest } = prettyPublish
-            for(const item in rest) {
-                console.log(`${item}: ${rest[item].toString()}`)
-            }
-            console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
-            console.log('========================')
-        }
-        else
-            console.log(publish)
+        await npm.deployNpmRelease(data, mainPublishVersion);
     }
-    //GitHub Release section
+    //In case we set a release of a GitHub release
     if(data.github) {
-        //version, branch, draft, preRelease
-        const githubResponse = (await github.getGitHubVersions(data.github))[0]
-        if(!githubResponse.tag_name) {
-            console.debug(githubResponse)
-            throw new Error('tag_name value is undefined.')
-        }
-        const currentVersion = githubResponse.tag_name.replace('v', '');
-        const updateVersion = npm.getNextVersion(currentVersion);
-        await github.releaseGitHubVersion({
-            owner: data.github.owner,
-            repo: data.github.repo,
-            token: data.github.token,
-            version: updateVersion,
-            branch: 'master',
-            draft: false,
-            preRelease: false,
-            debug: data.debug,
-            dryRun: data.dryRun
-        })
+        await github.deployGithubRelease(data, mainPublishVersion);
     }
+}
+
+/**
+ * Retrieving the main publish version
+ * @param {*} data The data of the action
+ * @param {*} mainManagerName The main manager name.
+ * @returns The next version of the main manager name
+ */
+async function getMainPublishVersion(data, mainManagerName) {
+    let currentVersion = null;
+    switch(mainManagerName) {
+        case 'github':
+            currentVersion = await github.getCurrentGitHubVersion(data);
+            break;
+        case 'npm':
+            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory);
+            break;
+        default:
+            break;
+    }
+    return utils.getNextVersion(currentVersion);
 }
