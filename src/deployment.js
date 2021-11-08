@@ -35,9 +35,11 @@ async function getMainPublishVersion(data, mainManagerName) {
     let currentVersion = null;
     switch(mainManagerName) {
         case 'github':
-            currentVersion = await github.getCurrentVersion(data.github);
+            currentVersion = await github.getCurrentGitHubVersion(data);
+            break;
         case 'npm':
-            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory)
+            currentVersion = await npm.getCurrentVersion(data.pkgName, data.workingDirectory);
+            break;
         default:
             break;
     }
