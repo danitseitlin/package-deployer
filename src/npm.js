@@ -66,13 +66,34 @@ export async function doesPackageExist(pkgName, cliArguments) {
     const isScope = arrayArguments.findIndex((item) => item.includes('--scope')) !== -1;
 
     if(!isScopedRegistry && !isScope) {
+        const errorMsg = `No matches found for "${pkgName}"`;
         const response = await utils.execute(`npm search ${pkgName}${cliArguments}`);
-        const isExists = response.stdout.indexOf(`No matches found for "${pkgName}"`) === -1;
+        let isExists = response.stdout.indexOf(errorMsg) === -1;
+        if(!isExists) {
+            const info = await getPackageInfo(pkgName, cliArguments);
+            isExists = info.indexOf(errorMsg) === -1;
+        }
         return isExists;
     }
     else {
         console.log('Because of known NPM issues, we do not search for the package existence before deployment of Scoped packages.')
         return true;
+    }
+}
+
+/**
+ * Retrieving the package info
+ * @param {*} pkgName The name of the package
+ * @param {*} cliArguments The additional CLI arguments
+ * @returns The package info. Will retrieve err msg if doesn't exists
+ */
+export async function getPackageInfo(pkgName, cliArguments) {
+    try {
+        const info = await utils.execute(`cd ${workingDirectory} && npm info ${pkgName}${cliArguments}`);
+        return info.stdout.replace('\n', '');
+    }
+    catch (err) {
+        return `No matches found for "${pkgName}"`
     }
 }
 
