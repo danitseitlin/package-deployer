@@ -34,6 +34,8 @@ const deployment = require('./src/deployment')
             if(packageName === '--help')
                 utils.printHelp();
             else {
+                const workingDirectoryIndex = cliArguments.find(arg => arg.includes('--working-directory='));
+                const workingDirectory = workingDirectory > -1 ? workingDirectory.slice(workingDirectoryIndex).split('=')[1] : '.'
                 const data = {
                     pkgName: packageName,
                     debug: cliArguments.find(arg => arg.includes('--debug')) !== undefined,
