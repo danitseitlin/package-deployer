@@ -6,28 +6,28 @@
   "scripts": {
     "build": "tsc",
     "pre-deploy": "npm run build && npm run clean",
-    "deploy": "deploy-pkg npm-package-deployer",
+    "deploy": "deploy-pkg package-deployer",
     "clean": "rmdir lib /s/q && rmdir dist /s/q",
     "action-build": "ncc build action.index.js -o dist && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
-    "pkg-build": "ncc build npm.index.js -o lib",
+    "pkg-build": "export NODE_OPTIONS=--openssl-legacy-provider && ncc build npm.index.js -o lib",
     "build-and-commit": "git add . && rmdir dist /s/q && npm run action-build && git push origin HEAD"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danitseitlin/npm-package-deployer.git"
+    "url": "git+https://github.com/danitseitlin/package-deployer.git"
   },
   "author": "Dani Tseitlin",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/danitseitlin/npm-package-deployer/issues"
+    "url": "https://github.com/danitseitlin/package-deployer/issues"
   },
-  "homepage": "https://github.com/danitseitlin/npm-package-deployer#readme",
+  "homepage": "https://github.com/danitseitlin/package-deployer#readme",
   "dependencies": {
     "@actions/core": "^1.0.0",
     "@actions/exec": "^1.0.0",
     "@actions/github": "^5.0.0",
     "chalk": "^4.1.0",
-    "node": "^16.0.0"
+    "node": "^17.1.0"
   },
   "bin": {
     "deploy-pkg": "./bin/node ../../../lib/index.js"
