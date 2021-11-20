@@ -27,7 +27,7 @@
     "@actions/exec": "^1.0.0",
     "@actions/github": "^5.0.0",
     "chalk": "^4.1.0",
-    "node": "^16.0.0"
+    "node": "^17.1.0"
   },
   "bin": {
     "deploy-pkg": "./bin/node ../../../lib/index.js"
