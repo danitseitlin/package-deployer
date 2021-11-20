@@ -12,7 +12,7 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run pkg-build && sudo npm link
     - name: Deploying version
-      run: sudo deploy-pkg npm-package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=npm-package-deployer --dry-run --publish-pretty-output --debug
+      run: sudo deploy-pkg npm-package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=package-deployer --dry-run --publish-pretty-output --debug
       
   action_deployment:
     runs-on: ubuntu-latest

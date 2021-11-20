@@ -1,22 +1,22 @@
-<p style='width:100%'><p align='center'><a href='https://github.com/danitseitlin/npm-package-deployer'><img src='.github/resources/cover-photo.png' /></a></p>
+<p style='width:100%'><p align='center'><a href='https://github.com/danitseitlin/package-deployer'><img src='.github/resources/cover-photo.png' /></a></p>
 <h1 align='center'>NPM Deploy bot <g-emoji class='g-emoji' alias='point_right' fallback-src='https://github.githubassets.com/images/icons/emoji/unicode/1f449.png'>👉</g-emoji> Automate your deployment process!</h1>
 <p align='center'>
-  <a href='https://www.npmjs.com/package/npm-package-deployer'>
-    <img src='https://img.shields.io/npm/v/npm-package-deployer/latest?style=plastic' target='_blank' />
+  <a href='https://www.npmjs.com/package/package-deployer'>
+    <img src='https://img.shields.io/npm/v/package-deployer/latest?style=plastic' target='_blank' />
   </a>
-  <a href='https://npmjs.org/package/npm-package-deployer' style='width:25px;height:20px;'>
-    <img src='https://img.shields.io/npm/dm/npm-package-deployer.svg?color=blue&style=plastic' target='_blank' />
+  <a href='https://npmjs.org/package/package-deployer' style='width:25px;height:20px;'>
+    <img src='https://img.shields.io/npm/dm/package-deployer.svg?color=blue&style=plastic' target='_blank' />
   </a>
-  <a href='https://github.com/danitseitlin/npm-package-deployer/issues' style='width:25px;height:20px;'>
-    <img src='https://img.shields.io/github/issues/danitseitlin/npm-package-deployer?style=plastic' target='_blank' />
+  <a href='https://github.com/danitseitlin/package-deployer/issues' style='width:25px;height:20px;'>
+    <img src='https://img.shields.io/github/issues/danitseitlin/package-deployer?style=plastic' target='_blank' />
   </a>
-  <a href='https://npmjs.org/package/npm-package-deployer' style='width:25px;height:20px;'>
-    <img src='https://img.shields.io/bundlephobia/min/npm-package-deployer/latest?style=plastic' target='_blank' />
+  <a href='https://npmjs.org/package/package-deployer' style='width:25px;height:20px;'>
+    <img src='https://img.shields.io/bundlephobia/min/package-deployer/latest?style=plastic' target='_blank' />
   </a>
-  <a href='https://github.com/danitseitlin/npm-package-deployer/commits/master'>
-    <img src='https://img.shields.io/github/last-commit/danitseitlin/npm-package-deployer?style=plastic' />
+  <a href='https://github.com/danitseitlin/package-deployer/commits/master'>
+    <img src='https://img.shields.io/github/last-commit/danitseitlin/package-deployer?style=plastic' />
   </a>
-  <a href='https://github.com/danitseitlin/npm-package-deployer/blob/master/LICENSE'>
+  <a href='https://github.com/danitseitlin/package-deployer/blob/master/LICENSE'>
     <img src='https://img.shields.io/badge/license-BSD%203%20Clause-blue.svg?style=plastic' target='_blank' />
   </a>
   <a href='https://dev.to/danitseitlin/simple-deploybot-npm-package-494f'>
@@ -25,7 +25,7 @@
 </p></p><p align='center'><img src='.github/resources/cli.gif'/></p>
 
 ## :zap: Quick Start
-Run `npm install npm-package-deployer`
+Run `npm install package-deployer`
 ## :clap: Basic usage
 Run `deploy-pkg <package name>` to deploy an automatic version locally. Here are available flags:
 
@@ -53,7 +53,7 @@ deployment:
     - name: Deploying version
       uses: ./
       with:
-        pkg_name: npm-package-deployer
+        pkg_name: package-deployer
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}

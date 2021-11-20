@@ -34,11 +34,14 @@ const deployment = require('./src/deployment')
             if(packageName === '--help')
                 utils.printHelp();
             else {
+                const workingDirectoryIndex = cliArguments.find(arg => arg.includes('--working-directory='));
+                const workingDirectory = workingDirectoryIndex > -1 ? cliArguments.slice(workingDirectoryIndex).split('=')[1] : '.'
                 const data = {
                     pkgName: packageName,
                     debug: cliArguments.find(arg => arg.includes('--debug')) !== undefined,
                     prettyPrint: cliArguments.find(arg => arg.includes('--pretty-print')) !== undefined,
-                    dryRun: cliArguments.find(arg => arg.includes('--dry-run')) !== undefined
+                    dryRun: cliArguments.find(arg => arg.includes('--dry-run')) !== undefined,
+                    workingDirectory: workingDirectory
                 }
                 const npmToken = cliArguments.find(arg => arg.includes('--npm-access-token'));
                 const npmRegistry = cliArguments.find(arg => arg.includes('--npm-registry'));
