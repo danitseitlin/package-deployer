@@ -3,6 +3,9 @@ on:
   pull_request:
 jobs:
   pkg_deployment:
+    env:
+      NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+      G_AUTH_TOKEN: ${{secrets.G_AUTH_TOKEN}}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -10,10 +13,12 @@ jobs:
       run: npm install && npm run pkg-build && sudo npm link
     - name: Deploying version
       run: sudo deploy-pkg npm-package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=npm-package-deployer --dry-run --publish-pretty-output --debug
-      env:
-        NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+      
   action_deployment:
     runs-on: ubuntu-latest
+    env:
+      NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+      G_AUTH_TOKEN: ${{secrets.G_AUTH_TOKEN}}
     steps:
     - uses: actions/checkout@v2
     - name: Setting up the environment
