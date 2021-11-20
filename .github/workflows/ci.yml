@@ -12,7 +12,7 @@ jobs:
     - name: Setting up the environment
       run: npm install && npm run pkg-build && sudo npm link
     - name: Deploying version
-      run: sudo deploy-pkg npm-package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=package-deployer --dry-run --publish-pretty-output --debug
+      run: sudo deploy-pkg package-deployer --npm-access-token=${{secrets.NPM_AUTH_TOKEN}} --github-access-token=${{secrets.G_AUTH_TOKEN}} --github-owner=danitseitlin --github-repo=package-deployer --dry-run --publish-pretty-output --debug
       
   action_deployment:
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
     - name: Deploying version
       uses: ./
       with:
-        pkg_name: npm-package-deployer
+        pkg_name: package-deployer
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
@@ -36,7 +36,7 @@ jobs:
     - name: Deploying version for non existing pkg
       uses: ./
       with:
-        pkg_name: npm-package-deployer-non
+        pkg_name: package-deployer-non
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
         npm_access_token: ${{secrets.NPM_AUTH_TOKEN}}
@@ -46,7 +46,7 @@ jobs:
     - name: Deploying version with main pkg manager NPM
       uses: ./
       with:
-        pkg_name: npm-package-deployer
+        pkg_name: package-deployer
         main_pkg_manager: npm
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
@@ -57,7 +57,7 @@ jobs:
     - name: Deploying version with main pkg manager GitHub
       uses: ./
       with:
-        pkg_name: npm-package-deployer
+        pkg_name: package-deployer
         main_pkg_manager: github
         pkg_managers: '[github, npm]'
         npm_registry: registry.npmjs.org
