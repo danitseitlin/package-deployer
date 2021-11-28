@@ -17,7 +17,7 @@
     <img src='https://img.shields.io/github/last-commit/danitseitlin/package-deployer?style=plastic' />
   </a>
   <a href='https://github.com/danitseitlin/package-deployer/blob/master/LICENSE'>
-    <img src='https://img.shields.io/badge/license-BSD%203%20Clause-blue.svg?style=plastic' target='_blank' />
+    <img src='https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=plastic' target='_blank' />
   </a>
   <a href='https://dev.to/danitseitlin/simple-deploybot-npm-package-494f'>
     <img src='.github/resources/dev-logo.png' target='_blank' />

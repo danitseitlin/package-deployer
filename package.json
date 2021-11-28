@@ -17,7 +17,7 @@
     "url": "git+https://github.com/danitseitlin/package-deployer.git"
   },
   "author": "Dani Tseitlin",
-  "license": "BSD-3-Clause",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/danitseitlin/package-deployer/issues"
   },
