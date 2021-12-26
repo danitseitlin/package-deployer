@@ -163,7 +163,7 @@ export async function deployNpmRelease(data, mainPublishVersion) {
     else {
         console.log(`Publishing new package ${pkgName}@${publishVersion}`);
     }
-    await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version${cliArguments}`, data.debug);
+    await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version --no-git-tag-version${cliArguments}`, data.debug);
     const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
     console.log('==== Publish Output ====')
     if(data.prettyPrint === 'true' || data.prettyPrint === true) {
