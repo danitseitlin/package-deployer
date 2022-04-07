@@ -71,3 +71,6 @@ export async function deployGithubRelease(data, mainPublishVersion) {
         dryRun: data.dryRun
     })
 }
+
+
+
