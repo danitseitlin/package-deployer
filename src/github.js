@@ -61,7 +61,7 @@ export async function deployGithubRelease(data, mainPublishVersion) {
     const publishVersion = utils.getNextVersion(currentVersion);
     const defaultBranch = await getDefaultBranch(data)
     const diff = await getBranchDiff(data)
-    print(diff)
+    console.log(diff)
     await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
