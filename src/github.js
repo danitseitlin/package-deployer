@@ -59,17 +59,32 @@ export async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
+    const defaultBranch = await getDefaultBranch(data)
+    const diff = await getBranchDiff(data)
+    print(diff)
     await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
         token: data.github.token,
         version: publishVersion,
-        branch: 'master',
+        branch: defaultBranch,
         draft: false,
         preRelease: false,
         debug: data.debug,
         dryRun: data.dryRun
     })
+}
+
+export async function getDefaultBranch(data) {
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
+    return JSON.parse(res).default_branch
+}
+
+export async function getBranchDiff(data) {
+    const defaultBranch = await getDefaultBranch(data)
+    //git cherry -v master head
+    const diff = await utils.execute(`git cherry -v ${defaultBranch} head`)
+    return diff
 }
 
 
