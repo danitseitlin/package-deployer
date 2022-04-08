@@ -5249,7 +5249,7 @@ async function getGitHubVersions(data) {
 async function getCurrentGitHubVersion(data) {
     const githubReleases = await getGitHubVersions(data.github);
     const githubRelease = githubReleases[0]
-    await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);
+    await utils.execute(`echo 'The latest github version ${JSON.stringify(githubRelease)}'`, data.debug);
     if(!githubRelease.tag_name) {
         console.debug(githubRelease)
         throw new Error('tag_name value is undefined.')
