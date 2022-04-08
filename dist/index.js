@@ -876,7 +876,7 @@ async function getMainPublishVersion(data, mainManagerName) {
         default:
             break;
     }
-    return utils.getNextVersion(currentVersion);
+    return currentVersion
 }
 
 /***/ }),
@@ -5265,8 +5265,8 @@ async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
-    const defaultBranch = await getDefaultBranch(data.github)
-    const commitsDiff = await getBranchDiff(data.github, defaultBranch)
+    const defaultBranch = await getDefaultBranch(data)
+    const commitsDiff = await getBranchDiff(data, defaultBranch)
     
     await releaseGitHubVersion({
         owner: data.github.owner,
@@ -5292,7 +5292,7 @@ async function getDefaultBranch(data) {
     if(process.env.GITHUB_BASE_REF){
         return process.env.GITHUB_BASE_REF;
     }
-    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}`, data.debug)
     return JSON.parse(res.stdout).default_branch
 }
 
@@ -5304,7 +5304,7 @@ async function getDefaultBranch(data) {
  */
 async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
-    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/compare/${defaultBranch}...${currentHeadBranch}`)
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${currentHeadBranch}`, data.debug)
     const parsedResponse = JSON.parse(res.stdout);
     return parsedResponse.commits;
 }
