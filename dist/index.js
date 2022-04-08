@@ -5304,6 +5304,13 @@ async function getDefaultBranch(data) {
  */
 async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
+    if(!currentHeadBranch || currentHeadBranch == null) {
+        if(data.debug !== undefined && data.debug == true) {
+            console.log(process.env)
+        } 
+        console.error(`Cannot find HEAD REF, found '${currentHeadBranch}'`)
+        return []
+    }
     const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${currentHeadBranch}`, data.debug)
     const parsedResponse = JSON.parse(res.stdout);
     return parsedResponse.commits;
