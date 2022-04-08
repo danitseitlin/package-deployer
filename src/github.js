@@ -20,7 +20,6 @@ export async function releaseGitHubVersion(data) {
         body+= buildBodyCommitMessage(commitsByAuthor)
     }
     console.log(`Releasing GitHub version ${tagName}`)
-    console.log(body)
     if(!data.dryRun) {
         const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
         if(res.stdout === '')
@@ -105,6 +104,12 @@ export async function deployGithubRelease(data, mainPublishVersion) {
     })
 }
 
+/**
+ * Retrieving the default branch of the repo, if the ENV parameters GITHUB_BASE_REF exists, we would use it.
+ * Else we would obtain the default_branch via GitHub API
+ * @param {*} data The data of the action
+ * @returns The default base branch of the repo
+ */
 export async function getDefaultBranch(data) {
     if(process.env.GITHUB_BASE_REF){
         return process.env.GITHUB_BASE_REF;
@@ -113,12 +118,15 @@ export async function getDefaultBranch(data) {
     return JSON.parse(res.stdout).default_branch
 }
 
+/**
+ * Retrieving the commit diffs of current branch and default branch
+ * @param {*} data The data of the action
+ * @param {*} defaultBranch The default branch of the repo
+ * @returns The commit diffs between 2 branches
+ */
 export async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/compare/${defaultBranch}...${currentHeadBranch}`)
     const parsedResponse = JSON.parse(res.stdout);
     return parsedResponse.commits;
 }
-
-
-
