@@ -130,7 +130,8 @@ export async function getBranchDiff(data, defaultBranch) {
         if(data.debug !== undefined && data.debug == true) {
             console.log(process.env)
         } 
-        throw new Error(`Cannot find HEAD REF, found '${currentHeadBranch}'`)
+        console.error(`Cannot find HEAD REF, found '${currentHeadBranch}'`)
+        return []
     }
     const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${currentHeadBranch}`, data.debug)
     const parsedResponse = JSON.parse(res.stdout);
