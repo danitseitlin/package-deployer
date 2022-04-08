@@ -43,5 +43,5 @@ async function getMainPublishVersion(data, mainManagerName) {
         default:
             break;
     }
-    return utils.getNextVersion(currentVersion);
+    return currentVersion
 }
