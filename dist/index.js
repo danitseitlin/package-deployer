@@ -633,7 +633,8 @@ async function verifyInputs(data) {
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
             dryRun: utils.stringToBoolean(dryRun),
-            mainPackageManager: mainPkgManager
+            mainPackageManager: mainPkgManager,
+            currentGitBranch: github.head_ref
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
@@ -5238,7 +5239,7 @@ async function deployGithubRelease(data, mainPublishVersion) {
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
     const defaultBranch = await getDefaultBranch(data.github)
-    const diff = await getBranchDiff(data.github)
+    const diff = await getBranchDiff(data.github, data.currentGitBranch)
     console.log(diff)
     await releaseGitHubVersion({
         owner: data.github.owner,
@@ -5259,10 +5260,10 @@ async function getDefaultBranch(data) {
     return JSON.parse(res.stdout).default_branch
 }
 
-async function getBranchDiff(data) {
+async function getBranchDiff(data, currentGitBranch) {
     const defaultBranch = await getDefaultBranch(data)
     //git cherry -v master head
-    const diff = await utils.execute(`git cherry -v ${defaultBranch} head`)
+    const diff = await utils.execute(`git cherry -v ${defaultBranch} ${currentGitBranch}`)
     return diff
 }
 
