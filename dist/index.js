@@ -5176,6 +5176,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentGitHubVersion", function() { return getCurrentGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultBranch", function() { return getDefaultBranch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentBranch", function() { return getCurrentBranch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiff", function() { return getBranchDiff; });
 const utils = __webpack_require__(543);
 
@@ -5258,6 +5259,11 @@ async function getDefaultBranch(data) {
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
     console.log(res)
     return JSON.parse(res.stdout).default_branch
+}
+
+async function getCurrentBranch() {
+    const output = await utils.execute('git status')
+    console.log(output.stdout)
 }
 
 async function getBranchDiff(data, currentGitBranch) {
