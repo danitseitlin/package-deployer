@@ -5176,6 +5176,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultBranch", function() { return getDefaultBranch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiff", function() { return getBranchDiff; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiffViaHeadRef", function() { return getBranchDiffViaHeadRef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchViaLastRelease", function() { return getBranchViaLastRelease; });
 const utils = __webpack_require__(543);
 
 /**
@@ -5304,16 +5306,41 @@ async function getDefaultBranch(data) {
  */
 async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
+    //In case we do not have a Github HEAD REF
     if(!currentHeadBranch || currentHeadBranch == null) {
-        if(data.debug !== undefined && data.debug == true) {
-            console.log(process.env)
-        } 
-        console.error(`Cannot find HEAD REF, found '${currentHeadBranch}'`)
-        return []
+        return await getBranchViaLastRelease(data, defaultBranch).commits;
     }
-    const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${currentHeadBranch}`, data.debug)
-    const parsedResponse = JSON.parse(res.stdout);
-    return parsedResponse.commits;
+    return await getBranchDiffViaHeadRef(data, defaultBranch, currentHeadBranch).commits;
+    //return parsedResponse.commits;
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} defaultBranch 
+ * @param {*} headRefBranch 
+ * @returns 
+ */
+async function getBranchDiffViaHeadRef(data, defaultBranch, headRefBranch) {
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${headRefBranch}`, data.debug)
+    return JSON.parse(res.stdout);
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} defaultBranch 
+ * @returns 
+ */
+async function getBranchViaLastRelease(data, defaultBranch) {
+    const releases = await getGitHubVersions(data.github);
+    if(releases.length === 0) {
+        return {
+            'commits': []
+        };
+    }
+    const latestRelease = releases[0];
+    return await getBranchDiffViaHeadRef(data, latestRelease.tag_name, defaultBranch);
 }
 
 /***/ }),
