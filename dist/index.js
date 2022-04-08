@@ -634,7 +634,7 @@ async function verifyInputs(data) {
             prettyPrint: utils.stringToBoolean(prettyPrint),
             dryRun: utils.stringToBoolean(dryRun),
             mainPackageManager: mainPkgManager,
-            currentGitBranch: github.head_ref
+            currentGitBranch: github.context.ref
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
