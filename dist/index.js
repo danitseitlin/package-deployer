@@ -5311,7 +5311,6 @@ async function getBranchDiff(data, defaultBranch) {
         return await getBranchViaLastRelease(data, defaultBranch).commits;
     }
     return await getBranchDiffViaHeadRef(data, defaultBranch, currentHeadBranch).commits;
-    //return parsedResponse.commits;
 }
 
 /**
