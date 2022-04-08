@@ -134,11 +134,11 @@ export async function getBranchDiff(data, defaultBranch) {
 }
 
 /**
- * 
- * @param {*} data 
- * @param {*} defaultBranch 
- * @param {*} headRefBranch 
- * @returns 
+ * Retrieving branch diff between 2 branches
+ * @param {*} data The data of the action 
+ * @param {*} defaultBranch The default branch
+ * @param {*} headRefBranch The HEAD REF branch
+ * @returns All the info regarding the diff
  */
 export async function getBranchDiffViaHeadRef(data, defaultBranch, headRefBranch) {
     const res = await utils.execute(`curl -H 'Authorization: token ${data.github.token}' https://api.github.com/repos/${data.github.owner}/${data.github.repo}/compare/${defaultBranch}...${headRefBranch}`, data.debug)
@@ -146,10 +146,10 @@ export async function getBranchDiffViaHeadRef(data, defaultBranch, headRefBranch
 }
 
 /**
- * 
- * @param {*} data 
- * @param {*} defaultBranch 
- * @returns 
+ * Retrieving branch diff between default branch and latest release
+ * @param {*} data The data of the action 
+ * @param {*} defaultBranch The default branch
+ * @returns All the info regarding the diff
  */
 export async function getBranchViaLastRelease(data, defaultBranch) {
     const releases = await getGitHubVersions(data.github);
