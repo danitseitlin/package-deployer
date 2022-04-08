@@ -127,7 +127,7 @@ export async function getDefaultBranch(data) {
 export async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
     if(!currentHeadBranch || currentHeadBranch == null) {
-        if(data.debug !== undefined && debug == true) {
+        if(data.debug !== undefined && data.debug == true) {
             console.log(`${process.env}`)
         } 
         throw new Error(`Cannot find HEAD REF, found '${currentHeadBranch}'`)
