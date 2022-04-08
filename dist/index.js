@@ -5270,7 +5270,7 @@ async function getBranchDiff(data, currentGitBranch) {
     //git cherry -v master head
     const branch = await getCurrentBranch()
     //git log --graph --decorate --pretty=oneline --abbrev-commit master origin/master head
-    const diff = await utils.execute(`git diff origin/master HEAD`)
+    const diff = await utils.execute(`git diff refs/heads/master HEAD`)
     //const diff = await utils.execute(`git cherry -v refs/${defaultBranch}`)
     return diff
 }
