@@ -5194,13 +5194,25 @@ async function configureGitHub(pkgName) {
  */
 async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
-    const body = `Release of ${tagName}`;
+    const body = `${tagName} Release\n`;
+    if(data.commits) {
+        body+= extractCommitMsgFromCommits(data.commits)
+    }
     console.log(`Releasing GitHub version ${tagName}`)
+    console.log(body)
     if(!data.dryRun) {
         const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
         if(res.stdout === '')
             throw new Error(res.stderr)
     }
+}
+function extractCommitMsgFromCommits(commits) {
+    let body = "Commits:\n";
+    for(const commit of commits) {
+        body += `Commited by ${commit.commit.author.name}\n`
+        body += commit.commit.message
+    }
+    return body
 }
 
 /**
@@ -5240,8 +5252,8 @@ async function deployGithubRelease(data, mainPublishVersion) {
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
     const defaultBranch = await getDefaultBranch(data.github)
-    const diff = await getBranchDiff(data.github, data.currentGitBranch)
-    console.log(diff)
+    const commitsDiff = await getBranchDiff(data.github, defaultBranch)
+    
     await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
@@ -5251,11 +5263,15 @@ async function deployGithubRelease(data, mainPublishVersion) {
         draft: false,
         preRelease: false,
         debug: data.debug,
+        commits: commitsDiff,
         dryRun: data.dryRun
     })
 }
 
 async function getDefaultBranch(data) {
+    if(process.env.GITHUB_BASE_REF){
+        return process.env.GITHUB_BASE_REF;
+    }
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
     return JSON.parse(res.stdout).default_branch
 }
@@ -5265,15 +5281,19 @@ async function getCurrentBranch() {
     console.log(output.stdout)
 }
 
-async function getBranchDiff(data, currentGitBranch) {
-    const defaultBranch = await getDefaultBranch(data)
+async function getBranchDiff(data, defaultBranch) {
+    /*const defaultBranch = await getDefaultBranch(data)
     //git cherry -v master head
     const branch = await getCurrentBranch()
     console.log(process.env)
     //git log --graph --decorate --pretty=oneline --abbrev-commit master origin/master head
     const diff = await utils.execute(`git diff ${process.env.GITHUB_BASE_REF} ${process.env.GITHUB_HEAD_REF}`)
     //const diff = await utils.execute(`git cherry -v refs/${defaultBranch}`)
-    return diff
+    return diff*/
+    const currentHeadBranch = process.env.GITHUB_HEAD_REF;
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/compare/${defaultBranch}...${currentHeadBranch}`)
+    const parsedResponse = JSON.parse(res.stdout);
+    return parsedResponse.commits;
 }
 
 
