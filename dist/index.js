@@ -5209,8 +5209,8 @@ async function releaseGitHubVersion(data) {
 function extractCommitMsgFromCommits(commits) {
     let body = "Commits:\n";
     for(const commit of commits) {
-        body += `Commited by ${commit.commit.author.name}\n`
-        body += commit.commit.message
+        body += `Commited by ${commit.commit.author.name}:\n`
+        body += `${commit.commit.message}\n`
     }
     return body
 }
