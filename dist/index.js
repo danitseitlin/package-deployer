@@ -5308,9 +5308,9 @@ async function getBranchDiff(data, defaultBranch) {
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
     //In case we do not have a Github HEAD REF
     if(!currentHeadBranch || currentHeadBranch == null) {
-        return await getBranchViaLastRelease(data, defaultBranch).commits;
+        return (await getBranchViaLastRelease(data, defaultBranch)).commits;
     }
-    return await getBranchDiffViaHeadRef(data, defaultBranch, currentHeadBranch).commits;
+    return (await getBranchDiffViaHeadRef(data, defaultBranch, currentHeadBranch)).commits;
 }
 
 /**
