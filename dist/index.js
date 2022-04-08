@@ -5199,9 +5199,18 @@ async function releaseGitHubVersion(data) {
         const commitsByAuthor = getCommitsByAuthor(data.commits)
         body+= buildBodyCommitMessage(commitsByAuthor)
     }
-    console.log(`Releasing GitHub version ${tagName}`)
+    
     if(!data.dryRun) {
-        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
+        const req = {
+            "tag_name": tagName,
+            "target_commitish": data.branch,
+            "name": tagName,
+            "body": body,
+            "draft": data.draft,
+            "prerelease": data.preRelease
+        }
+        console.log(`Releasing GitHub version ${tagName}`)
+        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '${JSON.stringify(req)}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`, data.debug)
         if(res.stdout === '')
             throw new Error(res.stderr)
     }
@@ -5224,7 +5233,7 @@ function getCommitsByAuthor(commits) {
 function buildBodyCommitMessage(commitsByAuthor) {
     let body = "Commits:\n";
     for(const author in commitsByAuthor) {
-        const commitList = `${commitsByAuthor[author]}`.split(',').join('\n')
+        const commitList = `${commitsByAuthor[author]}`.split(',').join(`\n`)
         body += `Commited by ${author}:\n`
         body += `${commitList}\n`
     }
@@ -5249,7 +5258,7 @@ async function getGitHubVersions(data) {
 async function getCurrentGitHubVersion(data) {
     const githubReleases = await getGitHubVersions(data.github);
     const githubRelease = githubReleases[0]
-    await utils.execute(`echo "The latest github version ${JSON.stringify(githubRelease)}"`, data.debug);
+    await utils.execute(`echo 'The latest github version ${JSON.stringify(githubRelease)}'`, data.debug);
     if(!githubRelease.tag_name) {
         console.debug(githubRelease)
         throw new Error('tag_name value is undefined.')
