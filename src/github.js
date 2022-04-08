@@ -89,7 +89,7 @@ export async function getBranchDiff(data, currentGitBranch) {
     const defaultBranch = await getDefaultBranch(data)
     //git cherry -v master head
     const branch = await getCurrentBranch()
-    const diff = await utils.execute(`git cherry -v ${defaultBranch}`)
+    const diff = await utils.execute(`git cherry -v refs/${defaultBranch}`)
     return diff
 }
 
