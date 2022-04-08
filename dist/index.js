@@ -5255,6 +5255,7 @@ async function deployGithubRelease(data, mainPublishVersion) {
 
 async function getDefaultBranch(data) {
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
+    console.log(res)
     return JSON.parse(res).default_branch
 }
 
