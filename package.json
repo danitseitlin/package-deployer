@@ -8,7 +8,7 @@
     "pre-deploy": "npm run build && npm run clean",
     "deploy": "deploy-pkg package-deployer",
     "clean": "rmdir lib /s/q && rmdir dist /s/q",
-    "action-build": "ncc build action.index.js -o dist && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
+    "action-build": "export NODE_OPTIONS=--openssl-legacy-provider && ncc build action.index.js -o dist && git add ./dist/index.js && git add ./action.index.js && git add ./action.yml && git commit -m \"Updating GitHub Action\"",
     "pkg-build": "export NODE_OPTIONS=--openssl-legacy-provider && ncc build npm.index.js -o lib",
     "build-and-commit": "git add . && rmdir dist /s/q && npm run action-build && git push origin HEAD"
   },
