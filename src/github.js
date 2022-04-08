@@ -14,7 +14,7 @@ export async function configureGitHub(pkgName) {
  */
 export async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
-    const body = `${tagName} Release\n`;
+    let body = `${tagName} Release\n`;
     if(data.commits) {
         body+= extractCommitMsgFromCommits(data.commits)
     }
