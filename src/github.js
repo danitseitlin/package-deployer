@@ -77,7 +77,6 @@ export async function deployGithubRelease(data, mainPublishVersion) {
 
 export async function getDefaultBranch(data) {
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
-    console.log(res)
     return JSON.parse(res.stdout).default_branch
 }
 
@@ -90,7 +89,7 @@ export async function getBranchDiff(data, currentGitBranch) {
     const defaultBranch = await getDefaultBranch(data)
     //git cherry -v master head
     const branch = await getCurrentBranch()
-    const diff = await utils.execute(`git cherry -v ${defaultBranch} ${currentGitBranch}`)
+    const diff = await utils.execute(`git cherry -v ${defaultBranch}`)
     return diff
 }
 
