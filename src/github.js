@@ -91,7 +91,7 @@ export async function getBranchDiff(data, currentGitBranch) {
     const branch = await getCurrentBranch()
     console.log(process.env)
     //git log --graph --decorate --pretty=oneline --abbrev-commit master origin/master head
-    const diff = await utils.execute(`git diff refs/heads/master HEAD`)
+    const diff = await utils.execute(`git diff ${process.env.GITHUB_BASE_REF} ${process.env.GITHUB_HEAD_REF}`)
     //const diff = await utils.execute(`git cherry -v refs/${defaultBranch}`)
     return diff
 }
