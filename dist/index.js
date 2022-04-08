@@ -5174,6 +5174,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentGitHubVersion", function() { return getCurrentGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultBranch", function() { return getDefaultBranch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiff", function() { return getBranchDiff; });
 const utils = __webpack_require__(543);
 
 /**
@@ -5190,13 +5192,41 @@ async function configureGitHub(pkgName) {
  */
 async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
-    const body = `Release of ${tagName}`;
+    let body = `${tagName} Release\n`;
+    if(data.commits && data.commits.length > 0) {
+        const commitsByAuthor = getCommitsByAuthor(data.commits)
+        body+= buildBodyCommitMessage(commitsByAuthor)
+    }
     console.log(`Releasing GitHub version ${tagName}`)
     if(!data.dryRun) {
         const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
         if(res.stdout === '')
             throw new Error(res.stderr)
     }
+}
+function getCommitsByAuthor(commits) {
+    const commitsByAuthor = {}
+    for(const commit of commits) {
+        const author = commit.commit.author.name;
+        const message = commit.commit.message;
+        //If any commits for the author we're already added, it would be an array and we would push into it
+        if(commitsByAuthor[author]) {
+            commitsByAuthor[author].push(message)
+        }
+        else {
+            commitsByAuthor[author] = [message]
+        }
+    }
+    return commitsByAuthor
+}
+function buildBodyCommitMessage(commitsByAuthor) {
+    let body = "Commits:\n";
+    for(const author in commitsByAuthor) {
+        const commitList = `${commitsByAuthor[author]}`.split(',').join('\n')
+        body += `Commited by ${author}:\n`
+        body += `${commitList}\n`
+    }
+    return body
 }
 
 /**
@@ -5235,17 +5265,48 @@ async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
+    const defaultBranch = await getDefaultBranch(data.github)
+    const commitsDiff = await getBranchDiff(data.github, defaultBranch)
+    
     await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
         token: data.github.token,
         version: publishVersion,
-        branch: 'master',
+        branch: defaultBranch,
         draft: false,
         preRelease: false,
         debug: data.debug,
+        commits: commitsDiff,
         dryRun: data.dryRun
     })
+}
+
+/**
+ * Retrieving the default branch of the repo, if the ENV parameters GITHUB_BASE_REF exists, we would use it.
+ * Else we would obtain the default_branch via GitHub API
+ * @param {*} data The data of the action
+ * @returns The default base branch of the repo
+ */
+async function getDefaultBranch(data) {
+    if(process.env.GITHUB_BASE_REF){
+        return process.env.GITHUB_BASE_REF;
+    }
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
+    return JSON.parse(res.stdout).default_branch
+}
+
+/**
+ * Retrieving the commit diffs of current branch and default branch
+ * @param {*} data The data of the action
+ * @param {*} defaultBranch The default branch of the repo
+ * @returns The commit diffs between 2 branches
+ */
+async function getBranchDiff(data, defaultBranch) {
+    const currentHeadBranch = process.env.GITHUB_HEAD_REF;
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/compare/${defaultBranch}...${currentHeadBranch}`)
+    const parsedResponse = JSON.parse(res.stdout);
+    return parsedResponse.commits;
 }
 
 /***/ }),
