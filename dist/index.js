@@ -633,8 +633,7 @@ async function verifyInputs(data) {
             debug: utils.stringToBoolean(debug),
             prettyPrint: utils.stringToBoolean(prettyPrint),
             dryRun: utils.stringToBoolean(dryRun),
-            mainPackageManager: mainPkgManager,
-            currentGitBranch: github.context.ref
+            mainPackageManager: mainPkgManager
         }
         data.npm = isNPM ? {
             token: npmAccessToken,
@@ -5176,7 +5175,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentGitHubVersion", function() { return getCurrentGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultBranch", function() { return getDefaultBranch; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentBranch", function() { return getCurrentBranch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiff", function() { return getBranchDiff; });
 const utils = __webpack_require__(543);
 
@@ -5195,8 +5193,9 @@ async function configureGitHub(pkgName) {
 async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
     let body = `${tagName} Release\n`;
-    if(data.commits) {
-        body+= extractCommitMsgFromCommits(data.commits)
+    if(data.commits && data.commits.length > 0) {
+        const commitsByAuthor = getCommitsByAuthor(data.commits)
+        body+= buildBodyCommitMessage(commitsByAuthor)
     }
     console.log(`Releasing GitHub version ${tagName}`)
     console.log(body)
@@ -5206,11 +5205,27 @@ async function releaseGitHubVersion(data) {
             throw new Error(res.stderr)
     }
 }
-function extractCommitMsgFromCommits(commits) {
-    let body = "Commits:\n";
+function getCommitsByAuthor(commits) {
+    const commitsByAuthor = {}
     for(const commit of commits) {
-        body += `Commited by ${commit.commit.author.name}:\n`
-        body += `${commit.commit.message}\n`
+        const author = commit.commit.author.name;
+        const message = commit.commit.message;
+        //If any commits for the author we're already added, it would be an array and we would push into it
+        if(commitsByAuthor[author]) {
+            commitsByAuthor[author].push(message)
+        }
+        else {
+            commitsByAuthor[author] = [message]
+        }
+    }
+    return commitsByAuthor
+}
+function buildBodyCommitMessage(commitsByAuthor) {
+    let body = "Commits:\n";
+    for(const author in commitsByAuthor) {
+        const commitList = `${commitsByAuthor[author]}`.split(',').join('\n')
+        body += `Commited by ${author}:\n`
+        body += `${commitList}\n`
     }
     return body
 }
@@ -5276,20 +5291,7 @@ async function getDefaultBranch(data) {
     return JSON.parse(res.stdout).default_branch
 }
 
-async function getCurrentBranch() {
-    const output = await utils.execute('git status')
-    console.log(output.stdout)
-}
-
 async function getBranchDiff(data, defaultBranch) {
-    /*const defaultBranch = await getDefaultBranch(data)
-    //git cherry -v master head
-    const branch = await getCurrentBranch()
-    console.log(process.env)
-    //git log --graph --decorate --pretty=oneline --abbrev-commit master origin/master head
-    const diff = await utils.execute(`git diff ${process.env.GITHUB_BASE_REF} ${process.env.GITHUB_HEAD_REF}`)
-    //const diff = await utils.execute(`git cherry -v refs/${defaultBranch}`)
-    return diff*/
     const currentHeadBranch = process.env.GITHUB_HEAD_REF;
     const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}/compare/${defaultBranch}...${currentHeadBranch}`)
     const parsedResponse = JSON.parse(res.stdout);
