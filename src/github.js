@@ -45,7 +45,7 @@ function getCommitsByAuthor(commits) {
 function buildBodyCommitMessage(commitsByAuthor) {
     let body = "Commits:\n";
     for(const author in commitsByAuthor) {
-        const commitList = `${commitsByAuthor[author]}`.split(',').join('\n')
+        const commitList = `${commitsByAuthor[author]}`.split(',').join(`\n`)
         body += `Commited by ${author}:\n`
         body += `${commitList}\n`
     }
