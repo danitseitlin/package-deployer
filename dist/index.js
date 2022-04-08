@@ -5174,6 +5174,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGitHubVersions", function() { return getGitHubVersions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentGitHubVersion", function() { return getCurrentGitHubVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deployGithubRelease", function() { return deployGithubRelease; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultBranch", function() { return getDefaultBranch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBranchDiff", function() { return getBranchDiff; });
 const utils = __webpack_require__(543);
 
 /**
@@ -5235,18 +5237,37 @@ async function deployGithubRelease(data, mainPublishVersion) {
     //version, branch, draft, preRelease
     const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentGitHubVersion(data);
     const publishVersion = utils.getNextVersion(currentVersion);
+    const defaultBranch = await getDefaultBranch(data)
+    const diff = await getBranchDiff(data)
+    console.log(diff)
     await releaseGitHubVersion({
         owner: data.github.owner,
         repo: data.github.repo,
         token: data.github.token,
         version: publishVersion,
-        branch: 'master',
+        branch: defaultBranch,
         draft: false,
         preRelease: false,
         debug: data.debug,
         dryRun: data.dryRun
     })
 }
+
+async function getDefaultBranch(data) {
+    const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' https://api.github.com/repos/${data.owner}/${data.repo}`)
+    return JSON.parse(res).default_branch
+}
+
+async function getBranchDiff(data) {
+    const defaultBranch = await getDefaultBranch(data)
+    //git cherry -v master head
+    const diff = await utils.execute(`git cherry -v ${defaultBranch} head`)
+    return diff
+}
+
+
+
+
 
 /***/ }),
 
