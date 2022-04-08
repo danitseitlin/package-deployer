@@ -19,9 +19,10 @@ export async function releaseGitHubVersion(data) {
         const commitsByAuthor = getCommitsByAuthor(data.commits)
         body+= buildBodyCommitMessage(commitsByAuthor)
     }
-    console.log(`Releasing GitHub version ${tagName}`)
+    
     if(!data.dryRun) {
-        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`)
+        console.log(`Releasing GitHub version ${tagName}`)
+        const res = await utils.execute(`curl -H 'Authorization: token ${data.token}' --data '{"tag_name": "${tagName}","target_commitish": "${data.branch}","name": "${tagName}","body": "${body}","draft": ${data.draft},"prerelease": ${data.preRelease}' https://api.github.com/repos/${data.owner}/${data.repo}/releases`, data.debug)
         if(res.stdout === '')
             throw new Error(res.stderr)
     }
