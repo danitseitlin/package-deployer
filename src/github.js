@@ -53,9 +53,12 @@ function getCommitsByAuthor(commits) {
     return commitsByAuthor
 }
 function buildBodyCommitMessage(commitsByAuthor) {
-    let body = "<h2>Commits:</h2>\n";
+    let body = "<h2>Commits:</h2>";
     for(const commit of commitsByAuthor) {
-        body += `${commit.message} by @${commit.authorUser} (${commit.authorName})\n`
+        body += `${commit.message} by @${commit.authorUser} (${commit.authorName})<br>`
+    }
+    if(commitsByAuthor.length === 0) {
+        body += '<h3>No commits are done in this release.</h3>'
     }
     return body
 }
