@@ -14,7 +14,7 @@ export async function configureGitHub(pkgName) {
  */
 export async function releaseGitHubVersion(data) {
     const tagName = `v${data.version}`;
-    let body = `${tagName} Release\n`;
+    let body = '';
     if(data.commits && data.commits.length > 0) {
         const commitsByAuthor = getCommitsByAuthor(data.commits)
         body+= buildBodyCommitMessage(commitsByAuthor)
@@ -36,26 +36,26 @@ export async function releaseGitHubVersion(data) {
     }
 }
 function getCommitsByAuthor(commits) {
-    const commitsByAuthor = {}
+    const commitsByAuthor = []
     for(const commit of commits) {
-        const author = commit.commit.author.name;
-        const message = commit.commit.message;
-        //If any commits for the author we're already added, it would be an array and we would push into it
-        if(commitsByAuthor[author]) {
-            commitsByAuthor[author].push(message)
+        const authorName = commit.commit.author.name;
+        const authorUser = commit.author.login
+        let message = commit.commit.message;
+        if(message.indexOf('\n') != -1){
+            message = message.split('\n')[0]
         }
-        else {
-            commitsByAuthor[author] = [message]
-        }
+        commitsByAuthor.push({
+            authorName: authorName,
+            authorUser: authorUser,
+            message: message
+        })
     }
     return commitsByAuthor
 }
 function buildBodyCommitMessage(commitsByAuthor) {
-    let body = "Commits:\n";
-    for(const author in commitsByAuthor) {
-        const commitList = `${commitsByAuthor[author]}`.split(',').join(`\n`)
-        body += `Commited by ${author}:\n`
-        body += `${commitList}\n`
+    let body = "<h2>Commits:</h2>\n";
+    for(const commit of commitsByAuthor) {
+        body += `${commit.message} by @${commit.authorUser} (${commit.authorName})\n`
     }
     return body
 }
