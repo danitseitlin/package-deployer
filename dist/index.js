@@ -5218,13 +5218,15 @@ async function releaseGitHubVersion(data) {
 function getCommitsByAuthor(commits) {
     const commitsByAuthor = []
     for(const commit of commits) {
-        const author = commit.commit.author.name;
+        const authorName = commit.commit.author.name;
+        const authorUser = commit.author.login
         let message = commit.commit.message;
         if(message.indexOf('\n') != -1){
             message = message.split('\n')[0]
         }
         commitsByAuthor.push({
-            author: author,
+            authorName: authorName,
+            authorUser: authorUser,
             message: message
         })
     }
@@ -5233,7 +5235,7 @@ function getCommitsByAuthor(commits) {
 function buildBodyCommitMessage(commitsByAuthor) {
     let body = "<h2>Commits:</h2>\n";
     for(const commit of commitsByAuthor) {
-        body += `${commit.message} by @${commit.author}\n`
+        body += `${commit.message} by @${commit.authorUser} (${commit.authorName})\n`
     }
     return body
 }
