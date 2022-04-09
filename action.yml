@@ -2,6 +2,10 @@ name: 'package-deploy-bot'
 description: 'GitHub Action to release packages in multiple methods'
 author: 'Dani Tseitlin'
 inputs:
+  deployment_type:
+    description: The deployment type of the pkg manager. Supported types are 'release' and 'test'
+    default: 'release'
+    required: false
   working_directory:
     description: The working directory of the GitHub action
     default: './'

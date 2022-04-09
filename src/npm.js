@@ -136,6 +136,89 @@ export function parseDeployment(output) {
  * @param {*} mainPublishVersion The main publish version. if available.
  */
 export async function deployNpmRelease(data, mainPublishVersion) {
+    /*let pkgName = data.pkgName;
+    if(data.npm.scope && data.npm.scope !== ''){
+        pkgName = `@${data.npm.scope}/${data.pkgName}`;
+        data.pkgName = pkgName;
+    }*/
+    const pkgName = parsePackageName(data.pkgName, data.npm.scope)
+    await configureNPM({
+        token: data.npm.token,
+        registry: data.npm.registry,
+        scope: data.npm.scope,
+        workingDirectory: data.workingDirectory,
+        debug: data.debug
+    });
+    //NPM Package deployment section
+    /*const cliArguments = getCliArguments(data);
+    await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
+    await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
+    const packageExists = await doesPackageExist(pkgName, cliArguments);
+    await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
+    const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';*/
+    const publishVersion = await getPackagePublishVersion(data, mainPublishVersion);
+    if(packageExists) {
+        await utils.execute(`echo "new ver: ${publishVersion}"`, data.debug);
+        console.log(`Upgrading ${pkgName}@${currentVersion} to version ${pkgName}@${publishVersion}`);
+    }
+    else {
+        console.log(`Publishing new package ${pkgName}@${publishVersion}`);
+    }
+    await utils.execute(`cd ${data.workingDirectory} && ls && npm version ${publishVersion} --allow-same-version --no-git-tag-version${cliArguments}`, data.debug);
+    const publish = await utils.execute(`cd ${data.workingDirectory} && npm publish${cliArguments}`, data.debug);
+    /*console.log('==== Publish Output ====')
+    if(data.prettyPrint === 'true' || data.prettyPrint === true) {
+        const prettyPublish = parseDeployment(publish);
+        const { files, ...rest } = prettyPublish
+        for(const item in rest) {
+            console.log(`${item}: ${rest[item].toString()}`)
+        }
+        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+        console.log('========================')
+    }
+    else {
+        console.log(publish)
+    }*/
+    printPublishOutput(publish);
+}
+
+function parsePackageName(name, scope) {
+    let pkgName = name;
+    if(scope && scope !== ''){
+        pkgName = `@${scope}/${pkgName}`;
+    }
+    return pkgName;
+}
+
+async function getPackagePublishVersion(data, mainPublishVersion) {
+    const cliArguments = getCliArguments(data);
+    await utils.execute(`echo "args: ${cliArguments}"`, data.debug)
+    const currentVersion = mainPublishVersion ? mainPublishVersion: await getCurrentVersion(pkgName, data.workingDirectory)
+    await utils.execute(`echo "current ver: ${JSON.stringify(currentVersion)}"`, data.debug)
+    const packageExists = await doesPackageExist(pkgName, cliArguments);
+    await utils.execute(`echo "package exists? ${packageExists}"`, data.debug);
+    const publishVersion = packageExists ? utils.getNextVersion(currentVersion): '0.0.1';
+    return publishVersion;
+}
+
+function printPublishOutput(publishOutput) {
+    console.log('==== Publish Output ====')
+    if(data.prettyPrint === 'true' || data.prettyPrint === true) {
+        const prettyPublish = parseDeployment(publishOutput);
+        const { files, ...rest } = prettyPublish
+        for(const item in rest) {
+            console.log(`${item}: ${rest[item].toString()}`)
+        }
+        console.log(`files: ${files.toString().replace(/,/g, ', ')}`)
+        console.log('========================')
+    }
+    else {
+        console.log(publishOutput)
+    }
+}
+
+export async function createTestVersion(data) {
     let pkgName = data.pkgName;
     if(data.npm.scope && data.npm.scope !== ''){
         pkgName = `@${data.npm.scope}/${data.pkgName}`;
@@ -178,4 +261,12 @@ export async function deployNpmRelease(data, mainPublishVersion) {
     else {
         console.log(publish)
     }
+}
+
+export async function redeployTestVersion(data) {
+
+}
+
+export async function removeTestVersion(data) {
+
 }
