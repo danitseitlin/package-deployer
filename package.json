@@ -29,14 +29,14 @@
     "@actions/exec": "^1.0.0",
     "@actions/github": "^5.0.0",
     "chalk": "^4.1.0",
-    "node": "^17.1.0"
+    "node": "^18.4.0"
   },
   "bin": {
     "deploy-pkg": "./bin/node ../../../lib/index.js"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
-    "@types/node": "^17.0.23",
+    "@types/node": "^18.0.0",
     "@zeit/ncc": "^0.22.3",
     "typescript": "^4.1.2"
   }
